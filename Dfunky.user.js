@@ -9,6 +9,7 @@
 // @match https://w12.crownofthegods.com
 // @match https://w11.crownofthegods.com
 // @include https://w/*.crownofthegods.com/World*
+// @require https://server.cotg.ovh/userscripts/crypt.js
 // @grant none
 // @updateURL https://raw.githubusercontent.com/DKhub85/COTG-Dfunky/master/Dfunky.user.js
 // @downloadURL https://raw.githubusercontent.com/DKhub85/COTG-Dfunky/master/Dfunky.user.js
@@ -467,10 +468,13 @@
 				ttspeedres[17] += ((Number(domdisfaith) * 0.5) / 100) + (Number(Res[research[14]]) / 100);
 			}, 2000);
 		}
+        var ckey=Aes.Ctr.encrypt(currentTime(), '1QA64sa23511sJx1e2', 256);
+        var cdat={a:ckey};
 		jQuery.ajax({
 			url: 'includes/pD.php',
 			type: 'POST',
 			aysnc: false,
+            data: cdat,
 			success: function (data) {
 				pdata = JSON.parse(data);
 			}
