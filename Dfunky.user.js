@@ -4,6 +4,8 @@
 // @version 1.0.0
 // @description Cotg Dfunky
 // @author Dhruv
+// @match https://w14.crownofthegods.com
+// @match https://w13.crownofthegods.com
 // @match https://w12.crownofthegods.com
 // @match https://w11.crownofthegods.com
 // @include https://w/*.crownofthegods.com/World*
@@ -13,6 +15,18 @@
 // ==/UserScript==
 
 (function() {
+	// popup message for players when they open the game.
+    $(document).ready(function() {
+    var popwin="<div id='HelloWorld' style='width:400px;height:400px;background-color: #E2CBAC;-moz-border-radius: 10px;-webkit-border-radius: 10px;border-radius: 10px;border: 4px ridge #DAA520;position:absolute;right:40%;top:100px; z-index:1000000;'><div class=\"popUpBar\"> <span class=\"ppspan\">Welcome!</span><button id=\"cfunkyX\" onclick=\"$('#HelloWorld').remove();\" class=\"xbutton greenb\"><div id=\"xbuttondiv\"><div><div id=\"centxbuttondiv\"></div></div></div></button></div><div id='hellobody' class=\"popUpWindow\"><span style='margin-left: 5%;'> <h3 style='text-align:center;'>Welcome to Crown Of The Gods!</h3></span><br><br><span style='margin-left: 5%;'> <h4 style='text-align:center;'> DFunky(Cfunky + Dhruv's Raiding helper)</h4></span><br><span style='margin-left: 5%;'> <h4 style='text-align:center;'>Updated 1st sept 2018</h4></span><br><br><span style='margin-left: 5%;'><h4>changes:</h4> <ul style='margin-left: 6%;'><li>Added Offensive Troop mailing functionality, Added Shrine zone calculator(was in cfunky) (9-1-2018)</li></ul></span></div></div>";
+        $("body").append(popwin);
+
+        setTimeout(function() {
+                            var options = {};
+                            $('#HelloWorld').hide( 'drop', options, 2000);
+                        }, 5000);
+
+
+    });
     var ttts=[1,10,1,1,1,1,1,2,2,2,2,2,10,10,100,100,400,1]; //ts per unit
     var citytc;
     var message="Not enough TS to kill this boss!";
@@ -20,6 +34,8 @@
     var mountain_loot=[350,960,4100,14900,31000,54500,112500,190500,285500,423500];//mountain loot
     var tpicdiv=["guard32 trooptdcm","bally32 trooptdcm","ranger32 trooptdcm","triari32 trooptdcm","priest32 trooptdcm","vanq32 trooptdcm","sorc32 trooptdcm","scout32 trooptdcm","arbal32 trooptdcm","praet32 trooptdcm","horsem32 trooptdcm",
                  "druid32 trooptdcm","ram32 trooptdcm","scorp32 trooptdcm","galley32 trooptdcm","sting32 trooptdcm","wship32 trooptdcm","senat32 trooptdcm"];
+    var tpicdiv20=["guard20 trooptdcm","bally20 trooptdcm","ranger20 trooptdcm","triari20 trooptdcm","priest20 trooptdcm","vanq20 trooptdcm","sorc20 trooptdcm","scout20 trooptdcm","arbal20 trooptdcm","praet20 trooptdcm","horsem20 trooptdcm",
+                 "druid20 trooptdcm","ram20 trooptdcm","scorp20 trooptdcm","galley20 trooptdcm","sting20 trooptdcm","wship20 trooptdcm","senat20 trooptdcm"];
     var ttspeed=[0,30,20,20,20,20,20,8,10,10,10,10,30,30,5,5,5,40];
     var ttres=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
     var ibriafaith=0,ylannafaith=0,naerafaith=0,cyndrosfaith=0,domdisfaith=0,vexifaith=0,meriusfaith=0,evarafaith=0; //alliance faiths
@@ -48,12 +64,14 @@
     var ttname=["Guards","Ballistas","Rangers","Triari","Priestess","Vanquishers","Sorcerers","Scouts","Arbalists","Praetors","Horsemans","Druids","Rams","Scorpions","Galleys","Stingers","Warships","senator"];
     var layoutsl=[""];
     var layoutsw=[""];
+    var layoutdf=[""];
     var cdata; //city data return
     var wdata; //world data
     var pldata; //players list on server
     var pdata; //player data
     var poll2; //poll2data
     var clc={};// city lists info
+    var oga; //city outgoing attacks info
     var city={cid:0,x:0,y:0,th:[0],cont:0}; //current city data
     var bosses={name:["Cyclops","Andar's Colosseum Challenge","Dragon","Romulus and Remus","Gorgon","GM Gordy","Triton"],
                 pic:["cyclops32 mauto bostooltip tooltipstered","andar32 mauto bostooltip tooltipstered","dragon32 mauto bostooltip tooltipstered","romrem32 mauto bostooltip tooltipstered","gorgon32 mauto bostooltip tooltipstered","gmgordy32 mauto bostooltip tooltipstered","triton32 mauto bostooltip tooltipstered"]};
@@ -61,12 +79,16 @@
     var key="_`abcdefgh";
     var remarksl=[""];
     var remarksw=[""];
+    var remarkdf=[""];
     var troopcounw=[[]];
+    var troopcound=[[]];
     var troopcounl=[[]];
     var resw=[[]];
+    var resd=[[]];
     var resl=[[]];
     var notesl=[""];
     var notesw=[""];
+    var notedf=[""];
     var emptyspots=",.;:#-T";
     var beentoworld=false;
     var splayers={name:[],ally:[],cities:[]};
@@ -133,6 +155,7 @@
                         if(poll2) {
                         var saveclc=poll2.player.clc;
                         var saveoga=poll2.OGA;
+                        clc=poll2.player.clc;
                         }
                         poll2=JSON.parse(this.response);
                         city.x=Number(poll2.city.cid % 65536);
@@ -359,242 +382,67 @@
             ibriafaith=Math.min(ibriafaith,100);
             evarafaith=Math.min(evarafaith,100);
             meriusfaith=Math.min(meriusfaith,100);
-            //attack power faith bonuses
-            ttres[0]+=Math.floor(0.5*ylannafaith)/100;
-            ttres[1]+=Math.floor(0.5*ylannafaith)/100;
-            ttres[2]+=Math.floor(0.5*naerafaith)/100;
-            ttres[3]+=Math.floor(0.5*naerafaith)/100;
-            ttres[4]+=Math.floor(0.5*naerafaith)/100;
-            ttres[5]+=Math.floor(0.5*vexifaith)/100;
-            ttres[6]+=Math.floor(0.5*vexifaith)/100;
-            ttres[7]+=Math.floor(0.5*vexifaith)/100;
-            ttres[8]+=Math.floor(0.5*naerafaith)/100;
-            ttres[9]+=Math.floor(0.5*naerafaith)/100;
-            ttres[10]+=Math.floor(0.5*vexifaith)/100;
-            ttres[11]+=Math.floor(0.5*vexifaith)/100;
-            ttres[12]+=Math.floor(0.5*cyndrosfaith)/100;
-            ttres[13]+=Math.floor(0.5*cyndrosfaith)/100;
-            ttres[14]+=Math.floor(0.5*ylannafaith)/100;
-            ttres[15]+=Math.floor(0.5*ylannafaith)/100;
-            ttres[16]+=Math.floor(0.5*cyndrosfaith)/100;
-            
-            //faith travel speed bonuses
-            ttspeedres[1]+=0.5*domdisfaith/100;
-            ttspeedres[2]+=0.5*ibriafaith/100;
-            ttspeedres[3]+=0.5*ibriafaith/100;
-            ttspeedres[4]+=0.5*ibriafaith/100;
-            ttspeedres[5]+=0.5*ibriafaith/100;
-            ttspeedres[6]+=0.5*ibriafaith/100;
-            ttspeedres[7]+=0.5*ibriafaith/100;
-            ttspeedres[8]+=0.5*ibriafaith/100;
-            ttspeedres[9]+=0.5*ibriafaith/100;
-            ttspeedres[10]+=0.5*ibriafaith/100;
-            ttspeedres[11]+=0.5*ibriafaith/100;
-            ttspeedres[12]+=0.5*domdisfaith/100;
-            ttspeedres[13]+=0.5*domdisfaith/100;
-            ttspeedres[14]+=0.5*domdisfaith/100;
-            ttspeedres[15]+=0.5*domdisfaith/100;
-            ttspeedres[16]+=0.5*domdisfaith/100;
-            ttspeedres[17]+=0.5*evarafaith/100;
-            }
-        setTimeout(function(){
-        $(".resPop").each(function() {
-            if($(this).attr('data')==8) { //inf speed
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else var reslvl=Number(ranktext.match(/\d+/gi));
-                for (var i in ttspeedres) {
-                    if (isinf[i]) {
-                ttspeedres[i]+=resbonus[reslvl];
-                    }
-                }
-                ttspeedres[6]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==9) { //cav speed
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else var reslvl=Number(ranktext.match(/\d+/gi));
-                for (var i in ttspeedres) {
-                    if (iscav[i]) {
-                ttspeedres[i]+=resbonus[reslvl];
-                    }
-                }
-                ttspeedres[11]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==13) { //navy speed
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else var reslvl=Number(ranktext.match(/\d+/gi));
-                ttspeedres[14]+=resbonus[reslvl];
-                ttspeedres[15]+=resbonus[reslvl];
-                ttspeedres[16]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==14) { //senator speed
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else var reslvl=Number(ranktext.match(/\d+/gi));
-                ttspeedres[17]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==30) { //rangers
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else var reslvl=Number(ranktext.match(/\d+/gi));
-                ttres[2]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==31) { //triari
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else
-                    var reslvl=Number(ranktext.match(/\d+/gi));
-                ttres[3]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==32) { //priestess
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else
-                    var reslvl=Number(ranktext.match(/\d+/gi));
-                ttres[4]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==33) { //vanqs
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else
-                    var reslvl=Number(ranktext.match(/\d+/gi));
-                ttres[5]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==34) { //sorcs
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else
-                    var reslvl=Number(ranktext.match(/\d+/gi));
-                ttres[6]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==35) { //arbs
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else
-                    var reslvl=Number(ranktext.match(/\d+/gi));
-                ttres[8]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==36) { //praetors
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else
-                    var reslvl=Number(ranktext.match(/\d+/gi));
-                ttres[9]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==37) { //horseman
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else
-                    var reslvl=Number(ranktext.match(/\d+/gi));
-                ttres[10]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==38) { //druid
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else
-                    var reslvl=Number(ranktext.match(/\d+/gi));
-                ttres[11]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==43) { //stinger
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else
-                    var reslvl=Number(ranktext.match(/\d+/gi));
-                ttres[15]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==44) { //galley
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else
-                    var reslvl=Number(ranktext.match(/\d+/gi));
-                ttres[14]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==45) { //warships
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else
-                    var reslvl=Number(ranktext.match(/\d+/gi));
-                ttres[16]+=resbonus[reslvl];
-            }
-            if($(this).attr('data')==46) { //scouts
-                var ranktext=$(this).text();
-                var cmp=new RegExp("complete");
-                if (cmp.test(ranktext)) {
-                    reslvl=12;
-                }
-                else
-                    var reslvl=Number(ranktext.match(/\d+/gi));
-                ttres[7]+=resbonus[reslvl];
-            }
-        });
-        },5000);
-        /*
+             var research= cotg.player.research();
+           //attack power faith bonuses      
+             setTimeout(function() {
+             ttres[0]+=((Number(naerafaith)*0.5)/100)+(Number(Res[research[29]])/100);//guards
+             ttres[1]+=((Number(naerafaith)*0.5)/100)+(Number(Res[research[42]])/100);//ballista
+             ttres[2]+=((Number(naerafaith)*0.5)/100)+(Number(Res[research[30]])/100);//ranger
+             ttres[3]+=((Number(naerafaith)*0.5)/100)+(Number(Res[research[31]])/100);//triari
+             ttres[4]+=((Number(naerafaith)*0.5)/100)+(Number(Res[research[32]])/100);//priestess
+             ttres[5]+=((Number(vexifaith)*0.5)/100)+(Number(Res[research[33]])/100);//vanq
+             ttres[6]+=((Number(vexifaith)*0.5)/100)+(Number(Res[research[34]])/100);//sorc
+             ttres[7]+=((Number(vexifaith)*0.5)/100)+(Number(Res[research[46]])/100);//scout
+             ttres[8]+=((Number(naerafaith)*0.5)/100)+(Number(Res[research[35]])/100);//arb
+             ttres[9]+=((Number(naerafaith)*0.5)/100)+(Number(Res[research[36]])/100);//pra
+             ttres[10]+=((Number(vexifaith)*0.5)/100)+(Number(Res[research[37]])/100);//horse
+             ttres[11]+=((Number(vexifaith)*0.5)/100)+(Number(Res[research[38]])/100);//druid
+             ttres[12]+=((Number(cyndrosfaith)*0.5)/100)+(Number(Res[research[39]])/100);//ram
+             ttres[13]+=((Number(cyndrosfaith)*0.5)/100)+(Number(Res[research[41]])/100);//scorp
+             ttres[14]+=((Number(ylannafaith)*0.5)/100)+(Number(Res[research[44]])/100);//galley
+             ttres[15]+=((Number(ylannafaith)*0.5)/100)+(Number(Res[research[43]])/100);//stinger
+             ttres[16]+=((Number(cyndrosfaith)*0.5)/100)+(Number(Res[research[45]])/100);//warship
+             //faith travel speed bonuses
+             ttspeedres[1]+=((Number(domdisfaith)*0.5)/100)+(Number(Res[research[12]])/100);
+             ttspeedres[2]+=((Number(ibriafaith)*0.5)/100)+(Number(Res[research[8]])/100);
+             ttspeedres[3]+=((Number(ibriafaith)*0.5)/100)+(Number(Res[research[8]])/100);
+             ttspeedres[4]+=((Number(ibriafaith)*0.5)/100)+(Number(Res[research[8]])/100);
+             ttspeedres[5]+=((Number(ibriafaith)*0.5)/100)+(Number(Res[research[8]])/100);
+             ttspeedres[6]+=((Number(ibriafaith)*0.5)/100)+(Number(Res[research[8]])/100);
+             ttspeedres[7]+=((Number(ibriafaith)*0.5)/100)+(Number(Res[research[11]])/100);
+             ttspeedres[8]+=((Number(ibriafaith)*0.5)/100)+(Number(Res[research[9]])/100);
+             ttspeedres[9]+=((Number(ibriafaith)*0.5)/100)+(Number(Res[research[9]])/100);
+             ttspeedres[10]+=((Number(ibriafaith)*0.5)/100)+(Number(Res[research[9]])/100);
+             ttspeedres[11]+=((Number(ibriafaith)*0.5)/100)+(Number(Res[research[9]])/100);
+             ttspeedres[12]+=((Number(domdisfaith)*0.5)/100)+(Number(Res[research[12]])/100);
+             ttspeedres[13]+=((Number(domdisfaith)*0.5)/100)+(Number(Res[research[12]])/100);
+             ttspeedres[14]+=((Number(domdisfaith)*0.5)/100)+(Number(Res[research[13]])/100);
+             ttspeedres[15]+=((Number(domdisfaith)*0.5)/100)+(Number(Res[research[13]])/100);
+             ttspeedres[16]+=((Number(domdisfaith)*0.5)/100)+(Number(Res[research[13]])/100);
+             ttspeedres[17]+=((Number(domdisfaith)*0.5)/100)+(Number(Res[research[14]])/100);
+             },2000);
+         }
         jQuery.ajax({url: 'includes/pD.php',type: 'POST',aysnc:false,
-                     success: function(data) {
-                         pdata=JSON.parse(data);
-                     }
-                    });
-        setTimeout(function(){
-            var cid=$("#cityDropdownMenu").val();
-            var dat={a:cid};
-            jQuery.ajax({url: 'includes/gC.php',type: 'POST',aysnc:false, data: dat});
-        },5000);*/
+                      success: function(data) {
+                          pdata=JSON.parse(data);
+                      }
+                     });
+         setTimeout(function(){
+             var cid=$("#cityDropdownMenu").val();
+             var dat={a:cid};
+             jQuery.ajax({url: 'includes/gC.php',type: 'POST',aysnc:false, data: dat});
+         },5000);
         //buttons
-        var returnAllbut="<button id='returnAllb' style='right: 37%; margin-top: 55px;width: 150px;height: 30px !important; font-size: 12px !important; position: absolute;' class='regButton greenb'>Return All</button>";
-        var raidbossbut="<button id='raidbossGo' style='left: 63%;margin-left: 10px;margin-top: 15px;width: 150px;height: 30px !important; font-size: 12px !important; position: absolute;' class='regButton greenb'>Locate Bosses</button>";
-        var attackbut="<button id='attackGo' style='right: 67%;margin-left: 10px;margin-top: 55px;width: 150px;height: 30px !important; font-size: 12px !important; position: absolute;' class='regButton greenb'>Attack Sender</button>";
-        var defbut="<button id='defGo' style='left: 63%;margin-left: 10px;margin-top: 55px;width: 150px;height: 30px !important; font-size: 12px !important; position: absolute;' class='regButton greenb'>Defense Sender</button>";
-        //bosstab
+        var returnAllbut="<button id='returnAllb' style='right: 35.6%; margin-top: 55px;width: 150px;height: 30px !important; font-size: 12px !important; position: absolute;' class='regButton greenb'>Return All</button>";
+        var raidbossbut="<button id='raidbossGo' style='left: 65%;margin-left: 10px;margin-top: 15px;width: 150px;height: 30px !important; font-size: 12px !important; position: absolute;' class='regButton greenb'>Locate Bosses</button>";
+        var attackbut="<button id='attackGo' style='margin-left: 25px;margin-top: 55px;width: 150px;height: 30px !important; font-size: 12px !important; position: absolute;' class='regButton greenb'>Attack Sender</button>";
+        var defbut="<button id='defGo' style='left: 65%;margin-left: 10px;margin-top: 55px;width: 150px;height: 30px !important; font-size: 12px !important; position: absolute;' class='regButton greenb'>Defense Sender</button>";
+        var quickdefbut="<button id='quickdefCityGo' style='width:96%; margin-top:2%; margin-left:2%;' class='regButton greenbuttonGo greenb'>@ Quick Reinforcements @</button>";
+        var neardefbut="<button id='ndefGo' style='left: 4%;margin-left: 3px;margin-top: 95px;width: 150px;height: 30px !important; font-size: 12px !important; position: absolute;' class='regButton greenb'> Nearest Defense</button>";
+        var nearoffbut="<button id='noffGo' style='right: 35.6%; margin-top: 95px;width: 150px;height: 30px !important; font-size: 12px !important; position: absolute;' class='regButton greenb'> Offensive list</button>";
+        var addtoatt="<button id='addtoAtt' style='margin-left: 7%;margin-top: -5%;width: 40%;height: 26px !important; font-size: 9px !important;' class='regButton greenb'>Add to Attack Sender</button>";
+        var addtodef="<button id='addtoDef' style='margin-left: 7%;width: 40%;height: 26px !important; font-size: 9px !important;' class='regButton greenb'>Add to Defense Sender</button>";
+	//bosstab
         var bosstab="<li id='bosshuntab' class='ui-state-default ui-corner-top' role='tab' tabindex='-1' aria-controls='warBossmanager'";
         bosstab+="aria-labeledby='ui-id-20' aria-selected='false' aria-expanded='false'>";
         bosstab+="<a href='#warBossmanager' class='ui-tabs-anchor' role='presentation' tabindex='-1' id='ui-id-20'>Find Bosses</a></li>";
@@ -653,8 +501,22 @@
         deftabbbody+="<tr><td>Set Time: </td><td><input id='defHr' type='number' style='width: 35px;height: 22px;font-size: 10px;' value='10'></td><td><input id='defMin' style='width: 35px;height: 22px;font-size: 10px;' type='number' value='00'></td>";
         deftabbbody+="<td><input style='width: 35px;height: 22px;font-size: 10px;' id='defSec' type='number' value='00'></td><td colspan='2'><input style='width:90px;' id='defDat' type='text' value='00/00/0000'></td></tr></tbody></table>";
         deftabbbody+="<button id='Defend' style='width: 35%;height: 30px; font-size: 12px; margin:10px;' class='regButton greenb'>Send Defense</button>";
-        //deftabbbody+="<table style='margin-left: 10%; margin-top:20px;'><tbody><tr><td style='width: 20%'><button id='Defend' style='width: 95%;height: 30px !important; font-size: 12px !important;' class='regButton greenb'>Send Defense</button></td>";
-        //deftabbbody+="</tr></tbody></table>";
+	    var ndeftab="<li id='neardeftab' class='ui-state-default ui-corner-top' role='tab'>";
+        ndeftab+="<a href='#warNdefmanager' class='ui-tabs-anchor' role='presentation'>Near Def</a></li>";
+        var ndeftabbody="<div id='warNdefmanager' class='ui-tabs-panel ui-widget-content ui-corner-bottom' ";
+        ndeftabbody+=" role='tabpanel' style='display: none;'><div id='fpdcdiv3' class='redheading' style='margin-left: 2%;' >Nearest defense:</div>";
+        ndeftabbody+="<table><td>Choose city:</td><td><input style='width: 30px;height: 22px;font-size: 10px;' id='ndefx' type='number'> : <input style='width: 30px;height: 22px;font-size: 10px;' id='ndefy' type='number'></td>";
+        ndeftabbody+="<td>Showing For:</td><td id='asdfgh' class='coordblink shcitt'></td>";        
+        ndeftabbody+="<td><button class='regButton greenb' id='ndefup' style='height:30px; width:70px;'>Update</button></td></table>";
+        ndeftabbody+="<div id='Ndefbox' class='beigemenutable scroll-pane' style='width: 96%; height: 85%; margin-left: 2%;'></div>";
+        var nofftab="<li id='nearofftab' class='ui-state-default ui-corner-top' role='tab'>";
+        nofftab+="<a href='#warNoffmanager' class='ui-tabs-anchor' role='presentation'>Offensive TS</a></li>";
+        var nofftabbody="<div id='warNoffmanager' class='ui-tabs-panel ui-widget-content ui-corner-bottom' ";
+        nofftabbody+=" role='tabpanel' style='display: none;'><div id='fpdcdiv3' class='redheading' style='margin-left: 2%;' >ALL Offensive TS:</div>";
+        nofftabbody+="<table><td colspan='2'> Continent(99 for navy):</td><td><input style='width: 30px;height: 22px;font-size: 10px;' id='noffx' type='number' value='0'>";
+        nofftabbody+="<td><button class='regButton greenb' id='noffup' style='height:30px; width:70px;'>Update</button></td>";
+        nofftabbody+="<td id='asdfg' style='width:10% !important;'></td><td><button class='regButton greenb' id='mailoff' style='height:30px; width:50px;'>Mail</button></td><td><input style='width: 100px;height: 22px;font-size: 10px;' id='mailname' type='text' value='Name_here;'></table>"
+        nofftabbody+="<div id='Noffbox' class='beigemenutable scroll-pane' style='width: 96%; height: 85%; margin-left: 2%;'></div>";
         var expwin="<div id='ExpImp' style='width:250px;height:200px;' class='popUpBox ui-draggable'><div class=\"popUpBar\"><span class=\"ppspan\">Import/Export attack orders</span>";
         expwin+="<button id=\"cfunkyX\" onclick=\"$('#ExpImp').remove();\" class=\"xbutton greenb\"><div id=\"xbuttondiv\"><div><div id=\"centxbuttondiv\"></div></div></div></button></div><div id='expbody' class=\"popUpWindow\">";
         expwin+="<textarea style='font-size:11px;width:97%;margin-left:1%;height:17%;' id='expstring' maxlength='200'></textarea><button id='applyExp' style='margin-left: 15px; width: 100px;height: 30px !important; font-size: 12px !important;' class='regButton greenb'>Apply</button></div></div>";
@@ -664,16 +526,25 @@
         $( bosstab ).appendTo( ul );
         $( attacktab ).appendTo( ul );
         $( deftab ).appendTo( ul );
+        $( ndeftab ).appendTo( ul );
+        $( nofftab ).appendTo( ul );
         tabs.tabs( "refresh" );
         $('#warCidlemanager').after(bosstabbody);
         $('#warCidlemanager').after(attacktabbody);
         $('#warAttackmanager').after(deftabbbody);
+        $('#warDefmanager').after(ndeftabbody);
+        $('#warNdefmanager').after(nofftabbody);
+	    $("#senddefCityGo").after(quickdefbut);
         $("#deftime").hide();
         $("#dret").hide();
         
         $("#warCounc").append(returnAllbut);
         $("#warCounc").append(attackbut);
         $("#warCounc").append(defbut);
+        $("#warCounc").append(neardefbut);
+        $("#warCounc").append(nearoffbut);
+        $("#coordstochatGo1").after(addtoatt);
+        $("#addtoAtt").after(addtodef);
         $("#loccavwarconGo").css("right","65%");
         $("#idluniwarconGo").css("left","34%");
         $("#idluniwarconGo").after(raidbossbut);
@@ -759,13 +630,44 @@
         $("#Defend").click(function() {
             localStorage.setItem('defperc',$("#defperc").val());
             localStorage.setItem('dretHr',$("#dretHr").val());
+            var defobj={targets:{x:[],y:[],dist:[],numb:0,cstr:[]},t:{tot:[],home:[],type:[],use:[],speed:[],amount:[]},perc:$("#defperc").val(),dep:$("#defdeparture").val(),ret:1,rettime:$("#dretHr").val(),hr:$("#defHr").val(),min:$("#defMin").val(),sec:$("#defSec").val(),date:$("#defDat").val(),dat:$("#defDat").datepicker('getDate')};
             if ($("#dretcheck").prop( "checked")==true) {
                 localStorage.setItem('dretcheck',1);
+                defobj.ret=1;
             }
             if ($("#dretcheck").prop( "checked")==false) {
                 localStorage.setItem('dretcheck',0);
+                defobj.ret=0;
             }
-            SendDef();
+            var tempx;
+            var tempy;
+            for (var i=1;i<15;i++) {
+                if ($("#d"+i+"x").val()) {
+                    tempx=$("#d"+i+"x").val();
+                    tempy=$("#d"+i+"y").val();
+                    defobj.targets.x.push(tempx);
+                    defobj.targets.y.push(tempy);
+                    defobj.targets.cstr.push(tempx+":"+tempy);
+                    defobj.targets.dist.push(Math.sqrt((tempx-city.x)*(tempx-city.x)+(tempy-city.y)*(tempy-city.y)));
+                    defobj.targets.numb++;
+                }
+            }
+            for (var i in poll2.city.tc) {
+                if (poll2.city.tc[i]) {
+                    defobj.t.tot.push(Math.ceil(poll2.city.tc[i]*Number($("#defperc").val())/100));
+                    defobj.t.home.push(Math.ceil(poll2.city.th[i]*Number($("#defperc").val())/100));
+                    defobj.t.type.push(Number(i));
+                    if ($("#usedef"+i).prop( "checked")==true) {
+                        defobj.t.speed.push(ttspeed[i]/ttspeedres[i]);
+                        defobj.t.use.push(1);
+                    } else {
+                        defobj.t.speed.push(0)
+                        defobj.t.use.push(0);
+                    }
+                    defobj.t.amount.push(0);
+                }
+            }
+            SendDef(defobj);
         });
         $('#attackGo').click(function() {
             $("#warcouncbox").show();
@@ -776,6 +678,113 @@
             $("#warcouncbox").show();
             tabs.tabs( "option", "active", 4 );
             $("#deftab").click();
+        });
+	    $('#ndefGo').click(function() {
+            cotgsubscribe.subscribe( "regional", function( data ) {
+                //do something with chat
+                var x=data.x;
+                var y=data.y;
+                var info=data.info;
+                $("#ndefx").val(x);
+                $("#ndefy").val(y);
+            });
+            $("#warcouncbox").show();
+            tabs.tabs( "option", "active", 5 );
+            $("#neardeftab").trigger({type:"click",originalEvent:"1"});
+        });
+        $('#neardeftab').click(function() {
+            cotgsubscribe.subscribe( "regional", function( data ) {
+                //do something with chat
+                var x=data.x;
+                var y=data.y;
+                var info=data.info;
+                $("#ndefx").val(x);
+                $("#ndefy").val(y);
+            });
+        });
+        $('#ui-id-115').click(function() {
+            cotgsubscribe.subscribe( "regional", function( data ) {
+                //do something with chat
+                var x=data.x;
+                var y=data.y;
+                var info=data.info;
+                $("#ndefx").val(x);
+                $("#ndefy").val(y);
+            });
+        });
+        $('#noffGo').click(function() {
+            $("#warcouncbox").show();
+            tabs.tabs( "option", "active", 6 );
+            $("#nearofftab").trigger({type:"click",originalEvent:"1"});
+        });
+        $("#addtoAtt").click(function() {
+            for (var i=1;i<8;i++) {
+                if (!$("#t"+i+"x").val()) {
+                    var tid=Number($("#showReportsGo").attr("data"));
+                    var tempx;
+                    var tempy;
+                    tempx=Number(tid % 65536);
+                    tempy=Number((tid-tempx)/65536);
+                    $("#t"+i+"x").val(tempx);
+                    $("#t"+i+"y").val(tempy);
+                    break;
+                }
+            }
+        });
+        $("#addtoDef").click(function() {
+            for (var i=1;i<15;i++) {
+                if (!$("#d"+i+"x").val()) {
+                    var tid=Number($("#showReportsGo").attr("data"));
+                    var tempx;
+                    var tempy;
+                    tempx=Number(tid % 65536);
+                    tempy=Number((tid-tempx)/65536);
+                    $("#d"+i+"x").val(tempx);
+                    $("#d"+i+"y").val(tempy);
+                    break;
+                }
+            }
+        });
+		$("#quickdefCityGo").click(function() {
+            var tid=Number($("#showReportsGo").attr("data"));
+            var tempx;
+            var tempy;
+            tempx=Number(tid % 65536);
+            tempy=Number((tid-tempx)/65536);
+            var defobj={targets:{x:[tempx],y:[tempy],dist:[],numb:1},t:{home:[],type:[],use:[],speed:[],amount:[]},perc:100,dep:0,ret:0,rettime:0,hr:0,min:0,sec:0,dat:0};
+            defobj.targets.dist.push(Math.sqrt((tempx-city.x)*(tempx-city.x)+(tempy-city.y)*(tempy-city.y)));
+            for (var i in city.th) {
+                if (city.th[i]) {
+                    defobj.t.home.push(Math.ceil(city.th[i]*Number($("#defperc").val())/100));
+                    defobj.t.type.push(Number(i));
+                    defobj.t.speed.push(ttspeed[i]/ttspeedres[i]);
+                    defobj.t.use.push(1);
+                    defobj.t.amount.push(0);
+                }
+            }
+            SendDef(defobj);
+        });
+        $("#ndefup").click(function() {
+            var tempxs=Number($("#ndefx").val());
+            var tempys=Number($("#ndefy").val());
+            var tids = tempxs + (tempys*65536);
+            $("#asdfgh").data(tids);
+            $("#asdfgh").text(tempxs+":"+tempys);
+            jQuery.ajax({url: 'overview/trpover.php',type: 'POST',aysnc:false,
+                         success: function(data) {
+                             var t=JSON.parse(data);
+                             neardeftable(t);
+                         }
+                        });
+        });
+        $("#noffup").click(function() {
+            jQuery.ajax({url: 'overview/trpover.php',type: 'POST',aysnc:false,
+                         success: function(data) {
+                             var t=JSON.parse(data);
+                             nearofftable(t);
+                         }
+                        });
+                    
         });
         $("#Aexport").click(function() {
             var Aexp={x:[],y:[],type:[],time:[]};
@@ -805,8 +814,8 @@
         });
     });
     //import attack orders
-    function Aimp(str) {
-        Aexp=JSON.parse(str);
+  	function Aimp(str) {
+        var Aexp=JSON.parse(str);
         for (var i=1; i<=Aexp.x.length; i++) {
             $("#t"+i+"x").val(Aexp.x[i-1]);
             $("#t"+i+"y").val(Aexp.y[i-1]);
@@ -816,75 +825,302 @@
         $("#attackMin").val(Aexp.time[1]);
         $("#attackSec").val(Aexp.time[2]);
         $("#attackDat").val(Aexp.time[3]);
+        }	
+    
+	function neardeftable(t) {
+        var cx=$("#ndefx").val();
+        var cy=$("#ndefy").val();
+        var cont=Number(Math.floor(cx/100)+10*Math.floor(cy/100));
+        var cit=[[]];
+        for (var i in t) {
+            var tid=t[i].id;
+            var tempx=Number(tid % 65536);
+            var tempy=Number((tid-tempx)/65536);
+            var tcont=Number(Math.floor(tempx/100)+10*Math.floor(tempy/100));
+            var ttspd=0;
+            if (cont==tcont) {
+                if (t[i].Ballista_total>0 || t[i].Ranger_total>0 || t[i].Triari_total>0 || t[i].Priestess_total || t[i].Arbalist_total>0 || t[i].Praetor_total>0 ) {
+                    var tdist=(Math.sqrt((tempx-cx)*(tempx-cx)+(tempy-cy)*(tempy-cy)));
+                    var tempt=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                    tempt[1]=t[i].Ballista_total;
+                    tempt[2]=t[i].Ranger_total;
+                    tempt[3]=t[i].Triari_total;
+                    tempt[4]=t[i].Priestess_total;
+                    tempt[8]=t[i].Arbalist_total;
+                    tempt[9]=t[i].Praetor_total;
+                    var temph=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                    temph[1]=t[i].Ballista_home;
+                    temph[2]=t[i].Ranger_home;
+                    temph[3]=t[i].Triari_home;
+                    temph[4]=t[i].Priestess_home;
+                    temph[8]=t[i].Arbalist_home;
+                    temph[9]=t[i].Praetor_home;
+                    var tempts=0; //TS total
+                    for (var j in tempt) {
+                        tempts+=tempt[j]*ttts[j];
+                    }
+                    var tempth=0; //TS Home
+                    for (var h in temph) {
+                        tempth+=temph[h]*ttts[h];
+                    }
+                    var tspeed=0;
+                    for (var j in tempt) {
+                        if (tempt[j]>0) {
+                            if (Number((ttspeed[j]/ttspeedres[j]).toFixed(2))>tspeed) {
+                                tspeed=Number((ttspeed[j]/ttspeedres[j]).toFixed(2));
+                            }
+                        }
+                    }
+                    cit.push([tempx,tempy,tdist,t[i].c,tempt,tempts,tempth,tid,tdist*tspeed]);
+                }
+            }
+            if (cont!=tcont || t[i].Galley_total>0 || t[i].Stinger_total>0) {
+                if (t[i].Stinger_total>0 || t[i].Galley_total>0) {
+                    var tdist=roundToTwo(Math.sqrt((tempx-cx)*(tempx-cx)+(tempy-cy)*(tempy-cy)));
+                    var tempt=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                    tempt[1]=t[i].Ballista_total;
+                    tempt[2]=t[i].Ranger_total;
+                    tempt[3]=t[i].Triari_total;
+                    tempt[4]=t[i].Priestess_total;
+                    tempt[8]=t[i].Arbalist_total;
+                    tempt[9]=t[i].Praetor_total;
+                    tempt[14]=t[i].Galley_total;
+                    tempt[15]=t[i].Stinger_total;
+                    var temph=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                    temph[1]=t[i].Ballista_home;
+                    temph[2]=t[i].Ranger_home;
+                    temph[3]=t[i].Triari_home;
+                    temph[4]=t[i].Priestess_home;
+                    temph[8]=t[i].Arbalist_home;
+                    temph[9]=t[i].Praetor_home;
+                    temph[14]=t[i].Galley_home;
+                    temph[15]=t[i].Stinger_home;
+                    var tempts=0;
+                    for (var j in tempt) {
+                        tempts+=tempt[j]*ttts[j];
+                    }
+                    var tempth=0; //TS Home
+                    for (var h in temph) {
+                        tempth+=temph[h]*ttts[h];
+                    }
+                    var tspeed=0;
+                    for (var j in tempt) {
+                        if (tempt[j]>0) {
+                            if (Number((ttspeed[j]/ttspeedres[j]).toFixed(2))>tspeed) {
+                                tspeed=Number((ttspeed[j]/ttspeedres[j]).toFixed(2));
+                            }
+                        }
+                    }
+                    var timetssp=(tdist*tspeed)+60;
+                    cit.push([tempx,tempy,tdist,t[i].c,tempt,tempts,tempth,tid,timetssp]);
+                }
+            }
+        }
+        cit.sort(function(a,b) {return a[8]-b[8];});
+        var neardeftab="<table id='ndeftable'><thead><th></th><th>City</th><th>Coords</th><th>TS Total</th><th>TS Home</th><th id='ndefdist'>Travel Time</th><th>type</th></thead><tbody>";
+        for (var i in cit) {
+            if(i>0){
+            var h1=Math.floor(cit[i][8]/60);
+            var m1=Math.floor(cit[i][8]%60);
+            h1 = h1 < 10 ? '0' + h1 : h1;
+            m1 = m1 < 10 ? '0' + m1 : m1; 
+            neardeftab+="<tr><td><button class='greenb chcity' id='cityGoTowm' a='"+cit[i][7]+"'>Go To</button></td><td>"+cit[i][3]+"</td><td class='coordblink shcitt' data='"+cit[i][7]+"'>"+cit[i][0]+":"+cit[i][1]+"</td>";
+            //style='font-size: 9px;border-radius: 10px;width: 85%;height: 22px;padding: 1;white-space: nowrap;'
+            neardeftab+="<td>"+cit[i][5]+"</td><td>"+cit[i][6]+"</td><td>"+h1+":"+m1+"</td><td><table>";
+            for (var j in cit[i][4]) {
+                if (cit[i][4][j]>0) {
+                    neardeftab+="<td><div class='"+tpicdiv20[j]+"'></div></td>";
+                }
+            }
+            neardeftab+="</table></td></tr>";
+            }
+        }
+        neardeftab+="</tbody></table>";
+        $("#Ndefbox").html(neardeftab);
+        $("#ndeftable td").css("text-align","center");
+        $("#ndeftable td").css("height","25px");
+        var newTableObject = document.getElementById('ndeftable');
+        sorttable.makeSortable(newTableObject);
+  //      $("#ndefdist").trigger({type:"click",originalEvent:"1"});
+  //      $("#ndefdist").trigger({type:"click",originalEvent:"1"});
     }
-    function SendDef() {
+
+    function nearofftable(t) {
+        var contoff=Number($("#noffx").val());
+        var cit=[[]];
+        var troopmail=[[]];
+        var counteroff=0;
+        for (var i in t) {
+            var tid=t[i].id;
+            var tempx=Number(tid % 65536);
+            var tempy=Number((tid-tempx)/65536);
+            var tcont=Number(Math.floor(tempx/100)+10*Math.floor(tempy/100));
+            if (contoff==tcont) {
+                if (t[i].Druid_total>0 || t[i].Horseman_total>0 || t[i].Sorcerer_total>0 || t[i].Vanquisher_total>0 || t[i].Scorpion_total>0 || t[i].Ram_total>0) {
+                    counteroff+=1;
+                    var tempt=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                    tempt[5]=t[i].Vanquisher_total;
+                    tempt[6]=t[i].Sorcerer_total;
+                    tempt[10]=t[i].Horseman_total;
+                    tempt[11]=t[i].Druid_total;
+                    tempt[12]=t[i].Ram_total;
+                    tempt[13]=t[i].Scorpion_total;
+                    var tempts=0;
+                    for (var j in tempt) {
+                        tempts+=tempt[j]*ttts[j];
+                    }
+                    troopmail.push([tempt,tempts]);
+                    cit.push([tempx,tempy,tempts,tempt,t[i].c,tid]);
+                }
+            }
+            if(contoff=="99"){
+                if (t[i].Warship_total>0  || t[i].Galley_total>0) {
+                    counteroff+=1;
+                    var tempt=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                    tempt[5]=t[i].Vanquisher_total;
+                    tempt[6]=t[i].Sorcerer_total;
+                    tempt[10]=t[i].Horseman_total;
+                    tempt[11]=t[i].Druid_total;
+                    tempt[12]=t[i].Ram_total;
+                    tempt[13]=t[i].Scorpion_total;
+                    tempt[14]=t[i].Galley_total;
+                    tempt[16]=t[i].Warship_total;
+                    var tempts=0;
+                    for (var j in tempt) {
+                        tempts+=tempt[j]*ttts[j];
+                    }
+                    troopmail.push([tempt,tempts]);
+                    cit.push([tempx,tempy,tempts,tempt,t[i].c,tid]);
+                }
+            }
+        }
+        cit.sort(function(a,b) {return b[2]-a[2];});
+        $("#asdfg").text("Total:"+counteroff);
+        var nearofftab="<table id='nofftable'><thead><th></th><th>City</th><th>Coords</th><th>TS</th><th>type</th></thead><tbody>";
+        for (var i in cit) {
+            if(i>0){
+                nearofftab+="<tr><td><button class='greenb chcity' id='cityGoTowm' a='"+cit[i][5]+"'>Go To</button></td><td>"+cit[i][4]+"</td><td class='coordblink shcitt' data='"+cit[i][5]+"'>"+cit[i][0]+":"+cit[i][1]+"</td>";
+                //style='font-size: 9px;border-radius: 6px;width: 80%;height: 22px;padding: 0;white-space: nowrap;'
+                nearofftab+="<td>"+cit[i][2]+"</td><td><table>";
+                for (var j in cit[i][3]) {
+                    if (cit[i][3][j]>0) {
+                        nearofftab+="<td><div class='"+tpicdiv20[j]+"'></div></td>";
+                    }
+                }   
+                nearofftab+="</table></td></tr>";
+            }
+        }
+        nearofftab+="</tbody></table>";
+        $("#Noffbox").html(nearofftab);
+        $("#nofftable td").css("text-align","center");
+        $("#nofftable td").css("height","26px");
+        var newTableObject = document.getElementById('nofftable');
+        sorttable.makeSortable(newTableObject);
+        troopmail.sort(function(a,b) {return b[1]-a[1];});
+        $("#mailoff").click(function() {
+            //$("#mailComposeBox").show();
+            var conttemp=$("#noffx").val();
+            var dhruv="<p>Number of offensive castles is '"+counteroff+"'</p>";
+            dhruv+='</p><table class="mce-item-table" style="width: 266.273px; "data-mce-style="width: 266.273px; "border="1" data-mce-selected="1"><thead><th>Number</th><th>Troop</th><th>TS Amount</th></thead><tbody>';
+            for (var i in troopmail) {
+                if(i>0){
+                    dhruv+='<tr><td style="text-align: center;" data-mce-style="text-align: center;">'+i+'</td>';
+                    dhruv+='<td style="text-align: center;" data-mce-style="text-align: center;"><table>';
+                    for (var j in troopmail[i][0]) {
+                        if (troopmail[i][0][j]>0) {
+                            dhruv+='<td>'+ttname[j]+'</td>';
+                        }
+                    }
+                    dhruv+='</table></td>';
+                    dhruv+='<td style="text-align: center;" data-mce-style="text-align: center;">'+troopmail[i][1]+'</td></tr>';
+                }
+            }
+            dhruv+="</tbody></table>";
+            if(conttemp==99){conttemp="Navy";}
+            jQuery("#mnlsp")[0].click();
+            jQuery("#composeButton")[0].click();
+            var temppo=$("#mailname").val();
+            $("#mailToto").val(temppo);
+            $("#mailToSub").val(conttemp+" Offensive TS");
+            var $iframe = $('#mailBody_ifr');
+            $iframe.ready(function() {
+                $iframe.contents().find("body").append(dhruv);
+            });
+        });
+    }
+
+    function clickevent(element) {
+        var event = jQuery.Event("click");
+            event.user = "foo";
+    }
+    function SendDef(defobj) {
         $("#commandsPopUpBox").show();
-        setTimeout(function() {
-            $("#commandsPopUpBox").hide();
-        },300);
         var commandtabs=$("#commandsdiv").tabs();
         commandtabs.tabs( "option", "active", 2 );
-        jQuery("#reintabb")[0].click();
-        var targets={x:[],y:[],dist:[]};
-        var tarnumb=0;
-        var tempx;
-        var tempy;
-        for (var i=1;i<15;i++) {
-            if ($("#d"+i+"x").val()) {
-                tempx=$("#d"+i+"x").val();
-                tempy=$("#d"+i+"y").val();
-                targets.x.push(tempx);
-                targets.y.push(tempy);
-                targets.dist.push(Math.sqrt((tempx-city.x)*(tempx-city.x)+(tempy-city.y)*(tempy-city.y)));
-                tarnumb++;
-            }
-        }
-        var t={home:[],type:[],use:[],speed:[],amount:[]};
-        for (var i in cdata.tc) {
-            if (cdata.tc[i]) {
-                t.home.push(Math.ceil(cdata.tc[i]*Number($("#defperc").val())/100));
-                t.type.push(Number(i));
-                if ($("#usedef"+i).prop( "checked")==true) {
-                    t.speed.push(ttspeed[i]/ttspeedres[i]);
-                    t.use.push(1);
-                } else {
-                    t.speed.push(0);
-                    t.use.push(0);
-                }
-                t.amount.push(0);
-            }
-        }
+        $("#reintabb").trigger({type:"click",originalEvent:"1"});
+        var targets=defobj.targets;
+        var tarnumb=defobj.targets.numb;
+        var t=defobj.t;
         var maxdist=Math.max.apply(Math, targets.dist);
         var time;
         //galley defend
-        if (t.type.indexOf(14)>-1 && $("#usedef14").prop( "checked")==true) {
-            time=ttspeed[14]/ttspeedres[14]*maxdist;
-            var gali=t.type.indexOf(14);
-            var galnumb=Math.floor(t.home[gali]/tarnumb);
-            var maxts=0;
-            for (var i in t.home) {
-                if (i!=gali) {
-                    if (t.use[i]==1) {
-                        maxts+=Math.floor(t.home[i]*ttts[t.type[i]]/tarnumb);
-                    }
+        if (t.type.indexOf(14)>-1) {
+            if (t.use[t.type.indexOf(14)]==1) {
+                time=ttspeed[14]/ttspeedres[14]*maxdist;
+                //console.log(time);
+                var gali=t.type.indexOf(14);
+                if (defobj.dep==0) {
+                    var galnumb=Math.floor(t.home[gali]/tarnumb);
+                } else {
+                    var galnumb=Math.floor(t.tot[gali]/tarnumb);
                 }
-            }
-            if (maxts<=galnumb*500) {
-                t.amount[gali]=Math.ceil(maxts/500);
+                var maxts=0;
                 for (var i in t.home) {
                     if (i!=gali) {
                         if (t.use[i]==1) {
-                            t.amount[i]=Math.floor(t.home[i]/tarnumb);
+                            if (t.type[i]!=15) {
+                                if (defobj.dep==0) {
+                                    maxts+=Math.floor(t.home[i]*ttts[t.type[i]]/tarnumb);
+                                } else {
+                                    maxts+=Math.floor(t.tot[i]*ttts[t.type[i]]/tarnumb);
+                                }
+                            }
                         }
                     }
                 }
-            } else {
-                var rat=galnumb*500/maxts;
-                t.amount[gali]=galnumb;
-                for (var i in t.home) {
-                    if (i!=gali) {
-                        if (t.use[i]==1) {
-                            t.amount[i]=Math.floor(rat*t.home[i]/tarnumb);
+                if (maxts<=galnumb*500) {
+                    t.amount[gali]=Math.ceil(maxts/500);
+                    for (var i in t.home) {
+                        if (i!=gali) {
+                            if (t.use[i]==1) {
+                                if (defobj.dep==0) {
+                                    t.amount[i]=Math.floor(t.home[i]/tarnumb);
+                                } else {
+                                    t.amount[i]=Math.floor(t.tot[i]/tarnumb);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    var rat=galnumb*500/maxts;
+                    t.amount[gali]=galnumb;
+                    for (var i in t.home) {
+                        if (i!=gali) {
+                            if (t.use[i]==1) {
+                                if (t.type[i]!=15) {
+                                    if (defobj.dep==0) {
+                                        t.amount[i]=Math.floor(rat*t.home[i]/tarnumb);
+                                    } else {
+                                        t.amount[i]=Math.floor(rat*t.tot[i]/tarnumb);
+                                    }
+                                } else {
+                                     if (defobj.dep==0) {
+                                        t.amount[i]=Math.floor(t.home[i]/tarnumb);
+                                    } else {
+                                        t.amount[i]=Math.floor(t.tot[i]/tarnumb);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -894,11 +1130,16 @@
             time=Math.max.apply(Math, t.speed)*maxdist;
             for (var i in t.home) {
                 if (t.use[i]==1) {
-                    t.amount[i]=Math.floor(t.home[i]/tarnumb);
+                    if (defobj.dep==0) {
+                        t.amount[i]=Math.floor(t.home[i]/tarnumb);
+                    } else {
+                        t.amount[i]=Math.floor(t.tot[i]/tarnumb);
+                    }
                 }
             }
         }
         // sending def
+        //console.log(t);
         var l=0; var end=targets.x.length;
         function dloop() {
             for (var i in t.home) {
@@ -909,63 +1150,113 @@
             $("#reinxcoord").val(targets.x[l]);
             $("#reinycoord").val(targets.y[l]);
             setTimeout(function(){
-                jQuery("#reinfcoordgo")[0].click();
+                $("#reinfcoordgo").trigger({type:"click",originalEvent:"1"});
             },100);
-            $("#reinforcetimingselect").val(Number($("#defdeparture").val())+1).change();
+            $("#reinforcetimingselect").val(Number(defobj.dep)+1).change();
             if ($("#defdeparture").val()>0) {
-                var date=$("#defDat").val()+" "+$("#defHr").val()+":"+$("#defMin").val()+":"+$("#defSec").val();
+                //console.log(defobj.min,defobj.hr,defobj.sec);
+                var date=defobj.date+" "+defobj.hr+":"+defobj.min+":"+defobj.sec;
                 $("#reinfotimeinp").val(date);
             }
-            jQuery("#reinforceGo")[0].click();
+
+            var event = jQuery.Event( "logged" );
+            event.user = "foo";
+            //$("#reinforceGo").trigger({type:"click",originalEvent:"1"});
+            $("#reinforceGo").trigger({
+                  type:"click",
+                  originalEvent:"1"
+                });
             l++;
             if (l<end) {
                 setTimeout( dloop, 1500 );
+            } else {
+                $("#commandsPopUpBox").hide();
+                setTimeout( function() {
+                    art();
+                }, 4000 );
             }
         }
         dloop();
-        if ($("#dretcheck").prop( "checked")==true) {
-            jQuery(".toptdinncommtbl1:first")[0].click();
-            setTimeout(function() {
-                $("#outgoingPopUpBox").hide();
-            },500);
-            if ($("#defdeparture").val()==2) {
-                var rh=Number($("#dretHr").val());
-                var hr=Number($("#defHr").val())-(Math.floor(time/60)+rh);
-                var returndate=$('#defDat').datepicker('getDate');
-                var min=$("#defMin").val()-Math.floor(time%60);
-                if (min<0) {
-                    min+=60;
-                    hr-=1;
+        function art() { //setting return time for raids according to city view outgoing list
+            //console.log(poll2.OGA);
+            $("#commandsPopUpBox").hide();
+            if (defobj.ret==1) {
+                jQuery(".toptdinncommtbl1:first")[0].click();
+                setTimeout(function() {
+                    $("#outgoingPopUpBox").hide();
+                },500);
+                var minddate = new Date();
+                var first=true;
+                for (var i in poll2.OGA) {
+                    //console.log(targets.cstr,poll2.OGA[i][5]);
+                    if (targets.cstr.indexOf(poll2.OGA[i][5])>-1) {
+                        if (first) {
+                            first=false;
+                            var a=poll2.OGA[i][6].substr(30);
+                            var b=a.substr(0,a.indexOf('<'));
+                            var time=b.split(" ");
+                            var ttime=time[2].split(":");
+                            minddate.setHours(Number(ttime[0]));
+                            minddate.setMinutes(Number(ttime[1]));
+                            minddate.setSeconds(Number(ttime[2]));
+                            //console.log(time[1]);
+                            if (time[1]=="Tomorrow") {
+                                minddate.setDate(minddate.getDate() + 1);
+                                //console.log("tmrw");
+                            } else if (time[1]!="Today") {
+                                var ddate=time[1].split("/");
+                                //console.log(ddate);
+                                minddate.setDate(Number(ddate[1]));
+                                minddate.setMonth(Number(ddate[0]));
+                            }
+                        } else {
+                            var a=poll2.OGA[i][6].substr(30);
+                            var b=a.substr(0,a.indexOf('<'));
+                            var time=b.split(" ");
+                            var ttime=time[2].split(":");
+                            var d=new Date();
+                            d.setHours(ttime[0]);
+                            d.setMinutes(ttime[1]);
+                            d.setSeconds(ttime[2]);
+                            if (time[1]=="Tomorrow") {
+                                //console.log("tmrw");
+                                d.setDate(minddate.getDate() + 1);
+                            } else if (time[1]!="Today") {
+                                var ddate=time[1].split("/");
+                                //console.log(ddate);
+                                d.setDate(ddate[1]);
+                                d.setMonth(ddate[0]);
+                            }
+                            //console.log(d,minddate);
+                            if (d<minddate) {
+                                minddate=d;
+                            }
+                        }
+                    }
                 }
-                if (hr<0 && hr>=-24) {
-                    hr+=24;
-                    returndate.setDate(returndate.getDate() - 1);
+                minddate.setHours(minddate.getHours()-defobj.rettime);
+                //console.log(minddate);
+                var hour=minddate.getHours();
+                if (hour<10) {
+                    hour="0"+hour;
                 }
-                if (hr<-24 && hr>= -48) {
-                    hr+=48;
-                    returndate.setDate(returndate.getDate() - 2);
+                var min=minddate.getMinutes();
+                if (min<10) {
+                    min="0"+min;
                 }
-                if (hr<-48) {
-                    hr+=72;
-                    returndate.setDate(returndate.getDate() - 3);
+                var sec=minddate.getSeconds();
+                if (sec<10) {
+                    sec="0"+sec;
                 }
-                if (hr<10) {hr="0"+hr;}
-                var retdate=getFormattedDate(returndate)+" "+hr+":"+min+":"+$("#defSec").val();
+                var retdate=getFormattedDate(minddate)+" "+hour+":"+min+":"+sec;
+                //console.log(retdate);
                 $("#raidrettimesela").val(3).change();
+                $("#raidrettimeselinp").val(retdate);
+                jQuery("#doneOGAll")[0].click();
+                alert("Defense set and troops returned");
+            } else {
+                alert("Defense set");
             }
-            if ($("#defdeparture").val()==1) {
-                var rh=Number($("#dretHr").val());
-                var hr=Number($("#defHr").val())-rh;
-                var returndate=$('#defDat').datepicker('getDate');
-                if (hr<0) {
-                    hr+=24;
-                    returndate.setDate(returndate.getDate() - 1);
-                }
-                var retdate=getFormattedDate(returndate)+" "+hr+":"+$("#defMin").val()+":"+$("#defSec").val();
-                $("#raidrettimesela").val(2).change();
-            }
-            $("#raidrettimeselinp").val(retdate);
-            jQuery("#doneOGAll")[0].click();
         }
     }
     function updateattack() {
@@ -1011,7 +1302,7 @@
         var pvptabs=$("#pvpTab").tabs();
         jQuery("#pvptabb")[0].click();
         commandtabs.tabs( "option", "active", 1 );
-        var targets={x:[],y:[],real:[],dist:[]};
+        var targets={x:[],y:[],real:[],dist:[],cstr:[]};
         var fakenumb=0;
         var realnumb=0;
         var tempx;
@@ -1022,6 +1313,7 @@
                 tempy=$("#t"+i+"y").val();
                 targets.x.push(tempx);
                 targets.y.push(tempy);
+                targets.cstr.push(tempx+":"+tempy);
                 targets.real.push($("#type"+i).val());
                 if ($("#type"+i).val()==1) {realnumb+=1;}
                 else {fakenumb+=1;}
@@ -1117,6 +1409,53 @@
             t.fake[gali]=fakeg;
             var galcap=500*galnumb;
             var nongalts=0;
+            for (var i in t.home) {
+                if (t.type[i]==14 && t.type[i]==17 && t.type[i]==16) {
+                    if (t.type[i]==14 ) {
+                        if ($("#usereal"+t.type[i]).prop( "checked")===true) {
+                            if ($("#usefake"+t.type[i]).prop( "checked")===true) {
+                                t.real[i]==1;
+                                t.fake[i]==1;
+                            } else {
+                                t.real[i]==1;
+                                t.fake[i]==0;
+                            }
+                        }
+                    }
+                    if (t.type[i]==17) {
+                        if ($("#usereal"+t.type[i]).prop( "checked")===true) {
+                            if ($("#usefake"+t.type[i]).prop( "checked")===true) {
+                                if (t.home[i]>=fakenumb+realnumb) {
+                                    t.fake[i]=1;
+                                    t.real[i]=1;
+                                } else {
+                                    t.fake[i]=0;
+                                    t.real[i]=1;
+                                }
+                            } else {
+                                t.fake[i]=0;
+                                t.real[i]=1;
+                            }
+                        } else if ($("#usefake"+t.type[i]).prop( "checked")===true) {
+                            t.real[i]=0;
+                            t.fake[i]=1;
+                        } else {
+                            t.real[i]=0;
+                            t.fake[i]=0;
+                        }
+                    }
+                    if (t.type[i]==16 ) {
+                        if ($("#usereal"+t.type[i]).prop( "checked")===true) {
+                            if ($("#usefake"+t.type[i]).prop( "checked")===true) {
+                                t.fake[i]=Math.ceil(faketss*t.home[i]);
+                                t.real[i]=Math.floor((t.home[i]-t.fake[i]*fakenumb)/realnumb);                               
+                            } else {
+                                t.real[i]=Math.floor((t.home[i])/realnumb);
+                            }
+                        }
+                    }
+                }
+            }
             for (var i in t.home) {
                 if (i!=gali && t.type[i]!=17) {
                     if ($("#usereal"+t.type[i]).prop( "checked")===true) {
@@ -1409,40 +1748,95 @@
             l++;
             if (l<end) {
                 setTimeout( loop, 1000 );
-            }
+            } else {
+                setTimeout( function() {
+                    art();
+                }, 4000 );
+             }       
         }
         loop();
-       //return all troops
-        if ($("#retcheck").prop( "checked")==true) {
-            jQuery(".toptdinncommtbl1:first")[0].click();
-            setTimeout(function() {
-                $("#outgoingPopUpBox").hide();
-            },500);
-            var rh=Number($("#retHr").val());
-            var hr=Number($("#attackHr").val())-(Math.floor(time/60)+rh);
-            var returndate=$('#attackDat').datepicker('getDate');
-            var min=$("#attackMin").val()-Math.floor(time%60);
-            if (min<0) {
-                min+=60;
-                hr-=1;
+        function art() { //setting return time for raids according to city view attacks list
+            //console.log(poll2.OGA);
+            $("#commandsPopUpBox").hide();
+            if ($("#retcheck").prop( "checked")==true) {
+                jQuery(".toptdinncommtbl1:first")[0].click();
+                setTimeout(function() {
+                    $("#outgoingPopUpBox").hide();
+                },500);
+                var minddate = new Date();
+                var first=true;
+                for (var i in poll2.OGA) {
+                    //console.log(targets.cstr,poll2.OGA[i][5]);
+                    if (targets.cstr.indexOf(poll2.OGA[i][5])>-1) {
+                        if (first) {
+                            first=false;
+                            var a=poll2.OGA[i][6].substr(30);
+                            var b=a.substr(0,a.indexOf('<'));
+                            var time=b.split(" ");
+                            var ttime=time[2].split(":");
+                            minddate.setHours(Number(ttime[0]));
+                            minddate.setMinutes(Number(ttime[1]));
+                            minddate.setSeconds(Number(ttime[2]));
+                            //console.log(time[1]);
+                            if (time[1]=="Tomorrow") {
+                                minddate.setDate(minddate.getDate() + 1);
+                                //console.log("tmrw");
+                            } else if (time[1]!="Today") {
+                                var ddate=time[1].split("/");
+                                console.log(ddate);
+                                minddate.setDate(Number(ddate[1]));
+                                minddate.setMonth(Number(ddate[0]-1));
+                                //console.log(minddate);
+                            }
+                        } else {
+                            var a=poll2.OGA[i][6].substr(30);
+                            var b=a.substr(0,a.indexOf('<'));
+                            var time=b.split(" ");
+                            var ttime=time[2].split(":");
+                            var d=new Date();
+                            d.setHours(ttime[0]);
+                            d.setMinutes(ttime[1]);
+                            d.setSeconds(ttime[2]);
+                            if (time[1]=="Tomorrow") {
+                                //console.log("tmrw");
+                                d.setDate(minddate.getDate() + 1);
+                            } else if (time[1]!="Today") {
+                                var ddate=time[1].split("/");
+                                //console.log(ddate);
+                                d.setDate(ddate[1]);
+                                d.setMonth(ddate[0]-1);
+                                //console.log(minddate);
+                            }
+                            //console.log(d,minddate);
+                            if (d<minddate) {
+                                minddate=d;
+                            }
+                        }
+                    }
+                }
+                minddate.setHours(minddate.getHours()-Number($("#retHr").val()));
+                //console.log(minddate);
+                var hour=minddate.getHours();
+                if (hour<10) {
+                    hour="0"+hour;
+                }
+                var min=minddate.getMinutes();
+                if (min<10) {
+                    min="0"+min;
+                }
+                var sec=minddate.getSeconds();
+                if (sec<10) {
+                    sec="0"+sec;
+                }
+                var retdate=getFormattedDate(minddate)+" "+hour+":"+min+":"+sec;
+                //console.log(retdate);
+                $("#raidrettimesela").val(3).change();
+                $("#raidrettimeselinp").val(retdate);
+                jQuery("#doneOGAll")[0].click();
+                alert("Attack set and troops returned");
+            } else {
+                alert("Attack set");
             }
-            if (hr<0 && hr>=-24) {
-                hr+=24;
-                returndate.setDate(returndate.getDate() - 1);
-            }
-            if (hr<-24 && hr>= -48) {
-                hr+=48;
-                returndate.setDate(returndate.getDate() - 2);
-            }
-            if (hr<-48) {
-                hr+=72;
-                returndate.setDate(returndate.getDate() - 3);
-            }
-            if (hr<10) {hr="0"+hr;}
-            var retdate=getFormattedDate(returndate)+" "+hr+":"+min+":"+$("#attackSec").val();
-            $("#raidrettimesela").val(3).change();
-            $("#raidrettimeselinp").val(retdate);
-            jQuery("#doneOGAll")[0].click();
         }
     }
 	//for on/off councilor
@@ -1625,6 +2019,110 @@
                 res=carts;
             }
             $("#foodsendamt").val(res);
+        });
+        //shrine planer part
+        var shrinebut="<button class='regButton greenb' id='shrineP' style='width: 98%;margins: 1%;'>Shrine Planner</button>";
+        $("#inactiveshrineInfo").before(shrinebut);
+        $("#shrineP").click(function() {
+            if (beentoworld) {
+                shrinec=[[]];
+                splayers={name:[],ally:[],cities:[]};
+                var players=[];
+                var coords=$("#coordstochatGo3").attr("data");
+                var shrinex=parseInt(coords);
+                var shriney=Number(coords.match(/\d+$/)[0]);
+                var shrinecont=Number(Math.floor(shrinex/100)+10*Math.floor(shriney/100));
+                for (var i in wdata.cities) {
+                    var tempx=Number(wdata.cities[i].substr(8,3))-100;
+                    var tempy=Number(wdata.cities[i].substr(5,3))-100;
+                    var cont=Number(Math.floor(tempx/100)+10*Math.floor(tempy/100));
+                    if (cont==shrinecont) {
+                        var dist=Math.sqrt((tempx-shrinex)*(tempx-shrinex)+(tempy-shriney)*(tempy-shriney));
+                        //console.log("dist");
+                        if (dist<10) {
+                            var l=Number(wdata.cities[i].substr(11,1));
+                            var pid=Number(wdata.cities[i].substr(12,l));
+                            var pname=pldata[pid];
+                            //console.log(pname);
+                            //console.log(splayers.name.indexOf(pname),pname,splayers.name);
+                            var csn=[3,4,7,8];
+                            if (csn.indexOf(Number(wdata.cities[i].charAt(4)))>-1) {
+                                shrinec.push(["castle",pname,0,tempx,tempy,dist,"0",0,0,0]);
+                            } else {
+                                shrinec.push(["city",pname,0,tempx,tempy,dist,"0",0,0,0]);
+                            }
+                        }
+                    }
+                }
+                shrinec.sort(function(a,b) {return a[5]-b[5];});
+                var planwin="<div id='shrinePopup' style='width:40%;height:50%;left: 360px; z-index: 3000;' class='popUpBox'><div class='popUpBar'><span class=\"ppspan\">Shrine Planner</span><button id='hidec' class='greenb' style='margin-left:10px;border-radius: 7px;margin-top: 2px;height: 28px;'>Hide Cities</button>";
+                planwin+="<button id='addcity' class='greenb' style='margin-left:10px;border-radius: 7px;margin-top: 2px;height: 28px;'>Add City</button><button id=\"sumX\" onclick=\"$('#shrinePopup').remove();\" class=\"xbutton greenb\"><div id=\"xbuttondiv\"><div><div id=\"centxbuttondiv\"></div></div></div></button></div><div class=\"popUpWindow\" style='height:100%'>";
+                planwin+="<div id='shrinediv' class='beigemenutable scroll-pane' style='background:none;border: none;padding: 0px;height:90%;'></div></div>";
+                for (var i in shrinec) {
+                    if (i<101) {
+                        var pname=shrinec[i][1];
+                        if (players.indexOf(pname)==-1) {
+                            players.push(pname);
+                            jQuery.ajax({url: 'includes/gPi.php',type: 'POST',aysnc:false,data: {a: pname},
+                                         success: function(data) {
+                                             var pinfo=JSON.parse(data);
+                                             splayers.name.push(pinfo.player);
+                                             splayers.ally.push(pinfo.a);
+                                             splayers.cities.push(pinfo.h);
+                                             //console.log(pinfo.a,pinfo.h,pinfo.player);
+                                        }  
+                                         });
+                        }
+                    }
+                }      
+                setTimeout(function() {
+                $("#reportsViewBox").after(planwin);
+                $( "#shrinePopup" ).draggable({ handle: ".popUpBar" , containment: "window", scroll: false});
+                $( "#shrinePopup" ).resizable();
+                if (localStorage.getItem("hidecities")) {
+                    1==1;
+                } else {
+                    //console.log("hideciies nonexists");
+                    localStorage.setItem("hidecities","0");
+                }
+                if (localStorage.getItem("hidecities")=="1") {
+                    $("#hidec").html("Show Cities");
+                }
+                $("#hidec").click(function() {
+                    if (localStorage.getItem("hidecities")=="0") {
+                        hidecities();
+                        localStorage.setItem("hidecities","1");
+                        $("#hidec").html("Show Cities");
+                    } else if (localStorage.getItem("hidecities")=="1") {
+                        showcities();
+                        localStorage.setItem("hidecities","0");
+                        $("#hidec").html("Hide Cities");
+                    }
+                });
+                updateshrine();
+                var addcitypop="<div id='addcityPopup' style='width:500px;height:100px;left: 360px; z-index: 3000;' class='popUpBox'><div class='popUpBar'><span class=\"ppspan\">Add City</span>";
+                addcitypop+="<button id=\"sumX\" onclick=\"$('#addcityPopup').remove();\" class=\"xbutton greenb\"><div id=\"xbuttondiv\"><div><div id=\"centxbuttondiv\"></div></div></div></button></div><div class=\"popUpWindow\" style='height:100%'>";
+                addcitypop+="<div><table><td>X: <input id='addx' type='number' style='width: 35px;height: 22px;font-size: 10px;'></td><td>y: <input id='addy' type='number' style='width: 35px;height: 22px;font-size: 10px;'></td>";
+                addcitypop+="<td>score: <input id='addscore' type='number' style='width: 45px;height: 22px;font-size: 10px;'></td><td>Type: <select id='addtype' class='greensel' style='font-size: 15px !important;width:55%;height:30px;'>";
+                addcitypop+="<option value='city'>City</option><option value='castle'>Castle</option></select></td><td><button id='addadd' class='greenb'>Add</button></td></table></div></div>";
+                $("#addcity").click(function() {
+                    $("body").append(addcitypop);
+                    $( "#addcityPopup" ).draggable({ handle: ".popUpBar" , containment: "window", scroll: false});
+                    $("#addadd").click(function() {
+                        tempx=$("#addx").val();
+                        tempy=$("#addy").val();
+                        dist=Math.sqrt((tempx-shrinex)*(tempx-shrinex)+(tempy-shriney)*(tempy-shriney));
+                        var temp=[$("#addtype").val(),"Poseidon","Atlantis",tempx,tempy,dist,"1",$("#addscore").val(),"Hellas","1"];
+                        shrinec.push(temp);
+                        shrinec.sort(function(a,b) {return a[5]-b[5];});
+                        updateshrine();
+                        $("#addcityPopup").remove();
+                    });
+                });
+                },2000);
+            } else {
+                alert("Press World Button");
+            }
         });
     });
     //Building count
@@ -1982,7 +2480,7 @@
         $("#returnTroops").click(function() {
             $("#raidrettimesela").val(bb).change();
             $("#raidrettimeselinp").val(cc);
-            $("#doneOGAll").click();
+            jQuery("#doneOGAll")[0].click();
         });
         $("#nextCity").click(function() {
             j++;
@@ -2043,7 +2541,6 @@
                 if (city.th[14] || city.th[15] || city.th[16]) {
                     var minutes=distance*ttspeed[14]/ttspeedres[14];
                     var time=Math.floor(minutes/60)+"h "+Math.floor(minutes % 60)+"m";
-                    //bosslist.name.push(bossinfo.name[i]);
                     bosslist.x.push(bossinfo.x[i]);
                     bosslist.y.push(bossinfo.y[i]);
                     bosslist.cid.push(Number(bossinfo.y[i]*65536+bossinfo.x[i]));
@@ -2054,14 +2551,10 @@
                 }
             }
         }
-        //var bosswin="<table id='bosstable' class='beigetablescrollp sortable'><thead><tr><th></th><th>Type</th><th>Level</th><th>Coordinates</th><th>Travel Time</th><th id='hdistance'>Distance</th></tr></thead>";
         var bosswin="<table id='bosstable' class='beigetablescrollp sortable'><thead><tr><th>Coordinates</th><th>Level</th><th>Continent</th><th>Travel Time</th><th id='hdistance'>Distance</th></tr></thead>";
         bosswin+="<tbody>";
         for (var i in bosslist.x) {
             var j=bosses.name.indexOf(bosslist.name[i]);
-            /*bosswin+="<tr id='bossline"+bosslist.cid[i]+"' class='dunginf'><td><button id='"+bosslist.cid[i]+"' class='greenb'>Hit Boss</button></td>";
-            bosswin+="<td style='text-align: center;'><div class='"+bosses.pic[j]+"'></div></td><td style='text-align: center;'>"+bosslist.lvl[i]+"</td>";
-            bosswin+="<td id='cl"+bosslist.cid[i]+"' class='coordblink shcitt' data='"+bosslist.cid[i]+"' style='text-align: center;'>"+bosslist.x[i]+":"+bosslist.y[i]+"</td><td style='text-align: center;'>"+bosslist.time[i]+"</td><td style='text-align: center;'>"+bosslist.distance[i]+"</td></tr>";*/
             bosswin+="<tr id='bossline"+bosslist.cid[i]+"' class='dunginf'><td id='cl"+bosslist.cid[i]+"' class='coordblink shcitt' data='"+bosslist.cid[i]+"' style='text-align: center;'>"+bosslist.x[i]+":"+bosslist.y[i]+"</td>";
             bosswin+="<td style='text-align: center;font-weight: bold;'>"+bosslist.lvl[i]+"</td><td style='text-align: center;'>"+bosslist.cont[i]+"</td>";
             bosswin+="<td style='text-align: center;'>"+bosslist.time[i]+"</td><td style='text-align: center;'>"+bosslist.distance[i]+"</td></tr>";
@@ -2525,253 +3018,6 @@
             $("#cityplayerInfo div table tbody tr:gt(6)").remove();
         }
         });
- /*   document.getElementById('raidDungGo').onclick = function() {
-        //createTable();
-        setTimeout(function(){setbossloot();}, 1000);
-        };*/
-  /*  function createTable() {
-        $('#cfunkydiv').remove();
-        var ptworow=$("#Progress").html();
-        if (ptworow==0)
-        {ptworow=100;}
-	var plevorow=$("#dunglevelregion").html();
-	var ptropneed = Math.ceil(loot[plevorow]*((100-ptworow)*0.008+1)/10);
-        var outtable="<div id='cfunkydiv' style='width:500px;height:330px;background-color: #E2CBAC;-moz-border-radius: 10px;-webkit-border-radius: 10px;border-radius: 10px;border: 4px ridge #DAA520;position:absolute;right:10px;top:100px; z-index:1000000;'><div class=\"popUpBar\"> <span class=\"ppspan\">Suggested Raiding Numbers - Caver progress "+ptworow+"%</span> <button id=\"cfunkyX\" onclick=\"$('#cfunkydiv').remove();\" class=\"xbutton greenb\"><div id=\"xbuttondiv\"><div><div id=\"centxbuttondiv\"></div></div></div></button></div><div class=\"popUpWindow\">";
-        outtable+="<table><thead><th>Lvl</th><th>Estimated Loot</th><th>Vanqs/Rangers<br>druids</th><th>Sorcs</th><th>Praetors</th><th>Arbs/Horses</th></thead>";
-        outtable+="<tbody><tr><td>1</td><td>400</td><td>"+Math.ceil(loot[1]*((100-ptworow)*0.008+1)/10)+"</td><td>"+Math.ceil(loot[1]*((100-ptworow)*0.008+1)/5)+"</td><td>"+Math.ceil(loot[1]*((100-ptworow)*0.008+1)/20)+"</td><td>"+Math.ceil(loot[1]*((100-ptworow)*0.008+1)/15)+"</td></tr>";
-        outtable+="<tr><td>2</td><td>1000</td><td>"+Math.ceil(loot[2]*((100-ptworow)*0.008+1)/10)+"</td><td>"+Math.ceil(loot[2]*((100-ptworow)*0.008+1)/5)+"</td><td>"+Math.ceil(loot[2]*((100-ptworow)*0.008+1)/20)+"</td><td>"+Math.ceil(loot[2]*((100-ptworow)*0.008+1)/15)+"</td></tr>";
-        outtable+="<tr><td>3</td><td>4500</td><td>"+Math.ceil(loot[3]*((100-ptworow)*0.008+1)/10)+"</td><td>"+Math.ceil(loot[3]*((100-ptworow)*0.008+1)/5)+"</td><td>"+Math.ceil(loot[3]*((100-ptworow)*0.008+1)/20)+"</td><td>"+Math.ceil(loot[3]*((100-ptworow)*0.008+1)/15)+"</td></tr>";
-        outtable+="<tr><td>4</td><td>15000</td><td>"+Math.ceil(loot[4]*((100-ptworow)*0.008+1)/10)+"</td><td>"+Math.ceil(loot[4]*((100-ptworow)*0.008+1)/5)+"</td><td>"+Math.ceil(loot[4]*((100-ptworow)*0.008+1)/20)+"</td><td>"+Math.ceil(loot[4]*((100-ptworow)*0.008+1)/15)+"</td></tr>";
-        outtable+="<tr><td>5</td><td>33000</td><td>"+Math.ceil(loot[5]*((100-ptworow)*0.008+1)/10)+"</td><td>"+Math.ceil(loot[5]*((100-ptworow)*0.008+1)/5)+"</td><td>"+Math.ceil(loot[5]*((100-ptworow)*0.008+1)/20)+"</td><td>"+Math.ceil(loot[5]*((100-ptworow)*0.008+1)/15)+"</td></tr>";
-        outtable+="<tr><td>6</td><td>60000</td><td>"+Math.ceil(loot[6]*((100-ptworow)*0.008+1)/10)+"</td><td>"+Math.ceil(loot[6]*((100-ptworow)*0.008+1)/5)+"</td><td>"+Math.ceil(loot[6]*((100-ptworow)*0.008+1)/20)+"</td><td>"+Math.ceil(loot[6]*((100-ptworow)*0.008+1)/15)+"</td></tr>";
-        outtable+="<tr><td>7</td><td>120000</td><td>"+Math.ceil(loot[7]*((100-ptworow)*0.008+1)/10)+"</td><td>"+Math.ceil(loot[7]*((100-ptworow)*0.008+1)/5)+"</td><td>"+Math.ceil(loot[7]*((100-ptworow)*0.008+1)/20)+"</td><td>"+Math.ceil(loot[7]*((100-ptworow)*0.008+1)/15)+"</td></tr>";
-        outtable+="<tr><td>8</td><td>201000</td><td>"+Math.ceil(loot[8]*((100-ptworow)*0.008+1)/10)+"</td><td>"+Math.ceil(loot[8]*((100-ptworow)*0.008+1)/5)+"</td><td>"+Math.ceil(loot[8]*((100-ptworow)*0.008+1)/20)+"</td><td>"+Math.ceil(loot[8]*((100-ptworow)*0.008+1)/15)+"</td></tr>";
-        outtable+="<tr><td>9</td><td>300000</td><td>"+Math.ceil(loot[9]*((100-ptworow)*0.008+1)/10)+"</td><td>"+Math.ceil(loot[9]*((100-ptworow)*0.008+1)/5)+"</td><td>"+Math.ceil(loot[9]*((100-ptworow)*0.008+1)/20)+"</td><td>"+Math.ceil(loot[9]*((100-ptworow)*0.008+1)/15)+"</td></tr>";
-        outtable+="<tr><td>10</td><td>446000</td><td>"+Math.ceil(loot[10]*((100-ptworow)*0.008+1)/10)+"</td><td>"+Math.ceil(loot[10]*((100-ptworow)*0.008+1)/5)+"</td><td>"+Math.ceil(loot[10]*((100-ptworow)*0.008+1)/20)+"</td><td>"+Math.ceil(loot[10]*((100-ptworow)*0.008+1)/15)+"</td></tr>";
-        outtable+="</tbody></table><div><button id='raidboxopt' class='regButton greenb' style='width:160px; margin: 1%;' >Dont show this again </button></div>";
-        outtable+="</div></div>";
-        $( "body" ).append(outtable);
-        $( "#cfunkydiv" ).draggable({ handle: ".popUpBar" , containment: "window", scroll: false});
-        $("#raidboxopt").click(function() {
-            localStorage.setItem("raidbox","1");
-            var raidboxback="<button class='regButton greenb' id='raidboxb' style='width:120px; margin-left: 2%;'>Return Raiding Box</button>";
-            $("#squaredung td").find(".squarePlayerInfo").before(raidboxback);
-            $("#raidboxb").click(function() {
-                localStorage.setItem("raidbox","0");
-                $("#raidboxb").remove();
-            });
-        });
-        if (localStorage.getItem("raidbox")==1) {
-            $('#cfunkydiv').remove();
-        }
-    }
-    function setbossloot() {
-        var ttm=[0];
-        var ttc=0;
-        var bosslvl=$("#dunglevelregion").html();
-        var bosstype=$("#dungtypespot").html();
-        var tnumb=[0];
-        $("#raidingTable tr").each(function() {
-            var temp=$(this).find("td:nth-child(3)").text();
-            var n = temp.search("/");
-            temp=temp.substring(0,n);
-            temp=temp.replace(",","");
-            var troops=Number(temp);
-            var temp1=$(this).attr('id');
-            var tt=Number(temp1.match(/\d+/gi));
-            if (tt!==7) {
-                if (troops>0) {
-                    ttc+=1;
-                    ttm[ttc-1]=tt;
-                    tnumb[ttc-1]=troops;
-                }
-            }
-        });
-        
-            if (bosstype=="Triton") {
-                for (i=0; i<ttc+1; i++) {
-                    $('#cfunkydiv').remove();
-                    if (ttm[i]>13) {
-                        if (isart[ttm[i]]) {
-                            var amount=Math.ceil(bossdefw[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                            amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                            if (amount<=tnumb[i]) {
-                                $('#raidIP'+ttm[i]).val(amount);
-                            } else {
-                                message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                errorgo(message);
-                            }
-                        } else {
-                            var amount=Math.ceil(bossdef[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                            amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                            if (amount<=tnumb[i]) {
-                                $('#raidIP'+ttm[i]).val(amount);
-                            } else {
-                                message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                errorgo(message);
-                            }
-                        }
-                    }
-                }
-            }
-                    else if (bosstype=="Cyclops") {
-                        for (i=0; i<ttc+1; i++) {
-                            $('#cfunkydiv').remove();
-                            if (ttm[i]<13) {
-                                if (iscav[ttm[i]]) {
-                                    var amount=Math.ceil(bossdefw[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                                    amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                                    if (amount<=tnumb[i]) {
-                                        $('#raidIP'+ttm[i]).val(amount);
-                                    } else {
-                                        message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                        errorgo(message);
-                                    }
-                                } else {
-                                    var amount=Math.ceil(bossdef[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                                    amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                                    if (amount<=tnumb[i]) {
-                                        $('#raidIP'+ttm[i]).val(amount);
-                                    } else {
-                                        message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                        errorgo(message);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (bosstype=="Andar's Colosseum Challenge") {
-                        for (i=0; i<ttc+1; i++) {
-                            $('#cfunkydiv').remove();
-                            if (ttm[i]<13) {
-                                if (iscav[ttm[i]]) {
-                                    var amount=Math.ceil(bossdefw[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                                    amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                                    if (amount<=tnumb[i]) {
-                                        $('#raidIP'+ttm[i]).val(amount);
-                                    } else {
-                                        message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                        errorgo(message);
-                                    }
-                                } else {
-                                    var amount=Math.ceil(bossdef[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                                    amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                                    if (amount<=tnumb[i]) {
-                                        $('#raidIP'+ttm[i]).val(amount);
-                                    } else {
-                                        message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                        errorgo(message);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (bosstype=="Dragon") {
-                        for (i=0; i<ttc+1; i++) {
-                            $('#cfunkydiv').remove();
-                            if (ttm[i]<13) {
-                                if (isinf[ttm[i]]) {
-                                    var amount=Math.ceil(bossdefw[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                                    amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                                    if (amount<=tnumb[i]) {
-                                        $('#raidIP'+ttm[i]).val(amount);
-                                    } else {
-                                        message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                        errorgo(message);
-                                    }
-                                } else {
-                                    var amount=Math.ceil(bossdef[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                                    amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                                    if (amount<=tnumb[i]) {
-                                        $('#raidIP'+ttm[i]).val(amount);
-                                    } else {
-                                        message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                        errorgo(message);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (bosstype=="Romulus and Remus") {
-                        for (i=0; i<ttc+1; i++) {
-                            $('#cfunkydiv').remove();
-                            if (ttm[i]<13) {
-                                if (isinf[ttm[i]]) {
-                                    var amount=Math.ceil(bossdefw[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                                    amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                                    if (amount<=tnumb[i]) {
-                                        $('#raidIP'+ttm[i]).val(amount);
-                                    } else {
-                                        message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                        errorgo(message);
-                                    }
-                                } else {
-                                    var amount=Math.ceil(bossdef[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                                    amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                                    if (amount<=tnumb[i]) {
-                                        $('#raidIP'+ttm[i]).val(amount);
-                                    } else {
-                                        message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                        errorgo(message);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (bosstype=="Gorgon") {
-                        for (i=0; i<ttc+1; i++) {
-                            $('#cfunkydiv').remove();
-                            if (ttm[i]<13) {
-                                if (ismgc[ttm[i]]) {
-                                    var amount=Math.ceil(bossdefw[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                                    amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                                    if (amount<=tnumb[i]) {
-                                        $('#raidIP'+ttm[i]).val(amount);
-                                    } else {
-                                        message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                        errorgo(message);
-                                    }
-                                } else {
-                                    var amount=Math.ceil(bossdef[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                                    amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                                    if (amount<=tnumb[i]) {
-                                        $('#raidIP'+ttm[i]).val(amount);
-                                    } else {
-                                        message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                        errorgo(message);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (bosstype=="GM Gordy") {
-                        for (i=0; i<ttc+1; i++) {
-                            $('#cfunkydiv').remove();
-                            if (ttm[i]<13) {
-                                if (ismgc[ttm[i]]) {
-                                    var amount=Math.ceil(bossdefw[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                                    amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                                    if (amount<tnumb[i]) {
-                                        $('#raidIP'+ttm[i]).val(amount);
-                                    } else {
-                                        message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                        errorgo(message);
-                                    }
-                                } else {
-                                    var amount=Math.ceil(bossdef[bosslvl-1]*4/(ttres[ttm[i]]*ttattack[ttm[i]]));
-                                    amount=Math.max(amount,bossmts[bosslvl-1]/ttts[ttm[i]]);
-                                    if (amount<=tnumb[i]) {
-                                        $('#raidIP'+ttm[i]).val(amount);
-                                    } else {
-                                        message="Error, you need at least " + amount + " " + ttname[ttm[i]]+"!";
-                                        errorgo(message);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else { createTable();}
-    } */
     // recall button in command window
     function recallraidl100(){
 //        var troops = cotg.city.troops();
@@ -2985,6 +3231,7 @@
                     carry_percentage(total_loot);
                 });
                 $("#WCcomcount").on('change', function() {
+                    if($("#rval14").val()){$("#rval14").val("0");}
                     carry_percentage(total_loot);
                     $(".tninput").change(function() {
                         carry_percentage(total_loot);
@@ -3202,7 +3449,7 @@
         layoutoptbody+="<td><input id='addtroops' class='clsubopti' type='checkbox'> Add Troops</td></tr><tr><td><input id='addtowers' class='clsubopti' type='checkbox'> Add Towers</td><td><input id='addbuildings' class='clsubopti' type='checkbox'> Upgrade Cabins</td>";
         layoutoptbody+="<td> Cabin Lvl: <input id='cablev' type='number' style='width:22px;' value='7'></td></tr><tr><td><input id='addwalls' class='clsubopti' type='checkbox'> Add Walls</td>";
         layoutoptbody+="<td><input id='addhub' class='clsubopti' type='checkbox'> Set Nearest Hub With layout</td></tr><tr><td>Select Hubs list: </td><td id='selhublist'></td><td>";
-        layoutoptbody+="<button id='nearhubAp' class='regButton greenb' style='width:130px; margin-left: 10%'>Set Nearest Hub</button></td></tr></tbody></table>";
+        layoutoptbody+="<button id='nearhubAp' class='regButton greenb' style='width:130px; margin-left: 10%'>Set Nearest Hub</button><button id='infantryAp' class='regButton greenb' style='width:130px; margin-left: 10%'>Infantry setup</button></td></tr></tbody></table>";
         layoutoptbody+="<table><tbody><tr><td colspan='2'><input id='addres' class='clsubopti' type='checkbox'> Add Resources:</td><td id='buttd' colspan='2'></td></tr><tr><td>wood<input id='woodin' type='number' style='width:100px;' value='200000'></td><td>stones<input id='stonein' type='number' style='width:100px;' value='220000'></td>";
         layoutoptbody+="<td>iron<input id='ironin' type='number' style='width:100px;' value='200000'></td><td>food<input id='foodin' type='number' style='width:100px;' value='350000'></td></tr>";
         layoutoptbody+="</tbody></table></div>";
@@ -3214,7 +3461,10 @@
         $("#CNtabs").append(layoutoptbody);
         $("#buttd").append(layoptbut);
         $("#nearhubAp").click(function() {
-            setnearhub();
+            setnearhub();           
+        });
+        $("#infantryAp").click(function() {
+            setinfantry();
         });
         $("#layoptBut").click(function() {
             localStorage.setItem('woodin',$("#woodin").val());
@@ -3333,122 +3583,123 @@
                 var selectbuttsdf='<select id="dfunkylayout" style="font-size: 10px !important;margin-top:1%;margin-left:2%;width:30%;" class="regButton greenb"><option value="0">Fast build layout</option>';
                 var ww=1;
                 selectbuttsdf+='<option value="'+ww+'">2 sec vanq</option>';
-                layoutsw.push("[ShareString.1.3]:########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BGBGB##-----##----##BBGBGBB##----##----#BGBGBGBGB#----##----#BGBGBGBGB#----#######BGBGTGBGB#######S-PP#BGBGBGBGB#----##S--P#BGBGBGBGB#----##----##BBGBGBB##----##-----##BGBGB##-----##-BBBBB#######------##-BBBBBXJZ#---------##-BBBBB---#---------###BBBBB---#--------#####BBBB---#-------########################");
-                remarksw.push("vanq"); notesw.push("256k @6 days");
-                troopcounw.push([0,0,0,0,0,300000,0,0,0,0,0,0,0,0,0,0,0]);
-                resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
+                layoutdf.push("[ShareString.1.3]:########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BGBGB##-----##----##BBGBGBB##----##----#BGBGBGBGB#----##----#BGBGBGBGB#----#######BGBGTGBGB#######S-PP#BGBGBGBGB#----##S--P#BGBGBGBGB#----##----##BBGBGBB##----##-----##BGBGB##-----##-BBBBB#######------##-BBBBBXJZ#---------##-BBBBB---#---------###BBBBB---#--------#####BBBB---#-------########################");
+                remarkdf.push("vanq"); notedf.push("256k @6 days");
+                troopcound.push([0,0,0,0,0,300000,0,0,0,0,0,0,0,0,0,0,0]);
+                resd.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
                 ww++;
                 selectbuttsdf+='<option value="'+ww+'">3 sec R/T</option>';
-                layoutsw.push("[ShareString.1.3]:########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BGBGB##-----##----##BBGBGBB##----##----#BGBGBGBGB#----##----#BGBGBGBGB#----#######BGBGTGBGB#######S-PP#BGBGBGBGB#----##S--P#BGBGBGBGB#----##----##GBGBGBG##----##-----##BGBGB##-----##-BBBBB#######------##-BBBBBXJZ#---------##-BBBBB---#---------###BBBBB---#--------#####BBBB---#-------########################");
-                remarksw.push("R/T"); notesw.push("240k R/T");
-                troopcounw.push([0,0,0,0,0,0,0,0,88300,0,0,0,0,0,354,0,0]);
-                resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
+                layoutdf.push("[ShareString.1.3]:########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BGBGB##-----##----##BBGBGBB##----##----#BGBGBGBGB#----##----#BGBGBGBGB#----#######BGBGTGBGB#######S-PP#BGBGBGBGB#----##S--P#BGBGBGBGB#----##----##GBGBGBG##----##-----##BGBGB##-----##-BBBBB#######------##-BBBBBXJZ#---------##-BBBBB---#---------###BBBBB---#--------#####BBBB---#-------########################");
+                remarkdf.push("R/T"); notedf.push("240k R/T");
+                troopcound.push([0,0,0,0,0,0,0,0,88300,0,0,0,0,0,354,0,0]);
+                resd.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
                 ww++;
                 selectbuttsdf+='<option value="'+ww+'">4 sec horse</option>';
-                layoutsw.push("[ShareString.1.3]:########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BEBEB##-----##----##EBEBEBE##----##----#BEBEBEBEB#----##----#BEBEBEBEB#----#######BEBETEBEB#######----#BEBEBEBEB#----##----#BEBEBEBEB#----##----##EBEBEBE##----##-----##BEBEB##-----##BBBBB-#######------##BEEEEB--J#---------##BBBBBB--X#---------###BEEEB-PP#--------#####BBBB-SS#-------########################");
-                remarksw.push("R/T"); notesw.push("112k horses @ 5 days");
-                troopcounw.push([0,0,0,0,0,0,0,0,88300,0,0,0,0,0,354,0,0]);
-                resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
+                layoutdf.push("[ShareString.1.3]:########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BEBEB##-----##----##EBEBEBE##----##----#BEBEBEBEB#----##----#BEBEBEBEB#----#######BEBETEBEB#######----#BEBEBEBEB#----##----#BEBEBEBEB#----##----##EBEBEBE##----##-----##BEBEB##-----##BBBBB-#######------##BEEEEB--J#---------##BBBBBB--X#---------###BEEEB-PP#--------#####BBBB-SS#-------########################");
+                remarkdf.push("R/T"); notedf.push("112k horses @ 5 days");
+                troopcound.push([0,0,0,0,0,0,0,0,88300,0,0,0,0,0,354,0,0]);
+                resd.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
                 ww++;
                 selectbuttsdf+='<option value="'+ww+'">5 sec sorc</option>';
-                layoutsw.push("[ShareString.1.3]:########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##JBJBJ##-----##----##BJBJBJB##----##----#JBJBJBJBJ#----##----#JBJBJBJBJ#SS-X#######JBJBTBJBJ#######----#JBJBJBJBJ#----##----#JBJBJBJBJ#----##----##BJBJBJB##----##-----##JBJBJ##BB---##------#######BBB---##---------#JBBBBB---##---------#JBJBBB---###--------#JBJBBB--#####-------#JBZBBB-########################");
-                remarksw.push("R/T"); notesw.push("216k sorc");
-                troopcounw.push([0,0,0,0,0,0,0,0,88300,0,0,0,0,0,354,0,0]);
-                resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
+                layoutdf.push("[ShareString.1.3]:########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##JBJBJ##-----##----##BJBJBJB##----##----#JBJBJBJBJ#----##----#JBJBJBJBJ#SS-X#######JBJBTBJBJ#######----#JBJBJBJBJ#----##----#JBJBJBJBJ#----##----##BJBJBJB##----##-----##JBJBJ##BB---##------#######BBB---##---------#JBBBBB---##---------#JBJBBB---###--------#JBJBBB--#####-------#JBZBBB-########################");
+                remarkdf.push("R/T"); notedf.push("216k sorc");
+                troopcound.push([0,0,0,0,0,0,0,0,88300,0,0,0,0,0,354,0,0]);
+                resd.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
                 ww++;
                 selectbuttsdf+='<option value="'+ww+'">7 sec pra</option>';
-                layoutsw.push("[ShareString.1.3]:########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BZBZB##-----##----##ZBZBZBZ##----##----#BZBZBZBZB#----##----#BZBZBZBZB#SS-X#######BZBZTZBZB#######----#BZBZBZBZB#J---##----#BZBZBZBZB#----##----##ZBZBZBZ##----##-----##BZBZB##-----##BBBBBB#######------##BBZBBB---#PP-------##BBBBBB---#P--------###BBBB----#--------#####BBB----#-------########################");
-                remarksw.push("R/T"); notesw.push("120k pra @ 10 days");
-                troopcounw.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
-                resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
+                layoutdf.push("[ShareString.1.3]:########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BZBZB##-----##----##ZBZBZBZ##----##----#BZBZBZBZB#----##----#BZBZBZBZB#SS-X#######BZBZTZBZB#######----#BZBZBZBZB#J---##----#BZBZBZBZB#----##----##ZBZBZBZ##----##-----##BZBZB##-----##BBBBBB#######------##BBZBBB---#PP-------##BBBBBB---#P--------###BBBB----#--------#####BBB----#-------########################");
+                remarkdf.push("R/T"); notedf.push("120k pra @ 10 days");
+                troopcound.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+                resd.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
                 ww++;
                 selectbuttsdf+='<option value="'+ww+'">6 sec arb</option>';
-                layoutsw.push("[ShareString.1.3]:########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BEBEB##-----##----##EBEBEBE##----##----#BEBEBEBEB#----##----#BEBEBEBEB#----#######BEBETEBEB#######----#BEBEBEBEB#----##----#BEBEBEBEB#----##----##EBEBEBE##----##-----##BEBEB##-----##BBBBB-#######------##BBEBBB--J#---------##BBBBBB-PX#---------###BBBBB-PP#--------#####BBB--SS#-------########################");
-                remarksw.push("R/T"); notesw.push("120k arb @ 8days");
-                troopcounw.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
-                resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
+                layoutdf.push("[ShareString.1.3]:########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BEBEB##-----##----##EBEBEBE##----##----#BEBEBEBEB#----##----#BEBEBEBEB#----#######BEBETEBEB#######----#BEBEBEBEB#----##----#BEBEBEBEB#----##----##EBEBEBE##----##-----##BEBEB##-----##BBBBB-#######------##BBEBBB--J#---------##BBBBBB-PX#---------###BBBBB-PP#--------#####BBB--SS#-------########################");
+                remarkdf.push("R/T"); notedf.push("120k arb @ 8days");
+                troopcound.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+                resd.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);                
                 selectbuttsdf+='</select>';
-                var selectbuttsw='<select id="funkylayoutw" style="font-size: 10px !important;margin-top:1%;margin-left:2%;width:45%;" class="regButton greenb"><option value="0">Select water layout</option>';
-                var ww=1;
-                selectbuttsw+='<option value="'+ww+'">2 sec rang/galley</option>';
+                
+                var selectbuttsw='<select id="funkylayoutw" style="font-size: 10px !important;margin-top:1%;margin-left:2%;width:45%;" class="regButton greenb"><option value="0">Select water layout</option>';               
+                var cww=1;
+                selectbuttsw+='<option value="'+cww+'">2 sec rang/galley</option>';
                 layoutsw.push("[ShareString.1.3];########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BGBGB##-----##----##GBGBGBG##----##----#BGBGBGBGB#----##----#BGBGBGBGB#---H#######BGBGTGBGB#######----#BGBGBGBGB#JSPX##----#BGBGBGBGB#----##----##GBGBGBG##G---##-----##BGGGB##BBBBG##------#######BBVVBB##---------#--GBV##VB##---------#--GBV###V###--------#---BBV#######-------#----BBV########################");
                 remarksw.push("rangers/triari/galley"); notesw.push("166600 inf and 334 galley @ 10 days");
                 troopcounw.push([0,0,83300,83300,0,0,0,0,0,0,0,0,0,0,334,0,0]);
                 resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
-                ww++;
-                selectbuttsw+='<option value="'+ww+'">6 sec arbs/galley</option>';
+                cww++;
+                selectbuttsw+='<option value="'+cww+'">6 sec arbs/galley</option>';
                 layoutsw.push("[ShareString.1.3];########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BEBEB##-----##----##EBEBEBE##----##----#BEBEBEBEB#----##----#BEBEBEBEB#----#######BEBETEBEB#######----#BEBEBEBEB#SPJX##----#BEBEBEBEB#MH--##----##EBEBEBE##----##-----##BEBEB##BBBB-##------#######BBVVBB##---------#---BVTTVB##---------#---BVTTTV###--------#--BBBVTT#####-------#--BEBBV########################");
                 remarksw.push("arbs/galley"); notesw.push("88300 inf and 354 galley @ 11.5 days");
                 troopcounw.push([0,0,0,0,0,0,0,0,88300,0,0,0,0,0,354,0,0]);
                 resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
-                ww++;
-                selectbuttsw+='<option value="'+ww+'">3 sec priestess/galley</option>';
+                cww++;
+                selectbuttsw+='<option value="'+cww+'">3 sec priestess/galley</option>';
                 layoutsw.push("[ShareString.1.3];########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BZBZB##-----##----##ZBZBZBZ##----##----#BZBZBZBZB#----##----#BZBZBZBZB#---H#######BZBZTZBZB#######----#BZBZBZBZB#JSPX##----#BZBZBZBZB#----##----##ZBZBZBZ##-Z--##-----##BZZZB##BBBBZ##------#######BBVVBB##---------#---BV##VB##---------#--ZBV###V###--------#---BBV#######-------#---ZBBV########################");
                 remarksw.push("priestess/galley"); notesw.push("166600 inf and 334 galley @ 11 days");
                 troopcounw.push([0,0,0,0,166600,0,0,0,0,0,0,0,0,0,334,0,0]);
                 resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
-                ww++;
-                selectbuttsw+='<option value="'+ww+'">7 sec praetor/galley</option>';
+                cww++;
+                selectbuttsw+='<option value="'+cww+'">7 sec praetor/galley</option>';
                 layoutsw.push("[ShareString.1.3];########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BZBZB##-----##----##ZBZBZBZ##----##----#BZBZBZBZB#----##----#BZBZBZBZB#----#######BZBZTZBZB#######----#BZBZBZBZB#SPJX##----#BZBZBZBZB#MH--##----##ZBZBZBZ##----##-----##BZBZB##BBBBZ##------#######BBVVBB##---------#---BVTTVB##---------#---BVTTTV###--------#---BBVTT#####-------#--BZBBV########################");
                 remarksw.push("praetors/galley"); notesw.push("86650 praetors and 347 galley @ 12 days");
                 troopcounw.push([0,0,0,0,0,0,0,0,0,86650,0,0,0,0,347,0,0]);
                 resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
-                ww++;
-                selectbuttsw+='<option value="'+ww+'">2 sec vanq/galley+senator</option>';
+                cww++;
+                selectbuttsw+='<option value="'+cww+'">2 sec vanq/galley+senator</option>';
                 layoutsw.push("[ShareString.1.3];########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BGBGB##-----##----##BBGBGBB##----##----#BGBGBGBGB#----##----#BGBGBGBGB#---H#######BGBGTGBGB#######----#BGBGBGBGB#JSPX##----#BGBGBGBGB#----##----##BBGBGBB##---B##-----##BGBGB##BBBBZ##------#######BBVVBB##---------#---BV##VB##---------#---BV###V###--------#---BBV#######-------#--BBBBV########################");
                 remarksw.push("vanq/galley+senator"); notesw.push("193300 inf and 387 galley @ 10 days");
                 troopcounw.push([0,0,0,0,0,193300,0,0,0,0,0,0,0,0,387,0,0]);
                 resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
-                ww++;
-                selectbuttsw+='<option value="'+ww+'">5 sec horses/galley</option>';
+                cww++;
+                selectbuttsw+='<option value="'+cww+'">5 sec horses/galley</option>';
                 layoutsw.push("[ShareString.1.3];########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BEBEB##-----##----##EBEBEBE##----##----#BEBEBEBEB#----##----#BEBEBEBEB#---H#######BEBETEBEB#######----#BEBEBEBEB#JSPX##----#BEBEBEBEB#-M--##----##EBEBEBB##----##-----##BEBEB##BBBB-##------#######BBVVBB##---------#---BV##VB##---------#---BV###V###--------#--BBBV#######-------#--BEBBV########################");
                 remarksw.push("horses/galley"); notesw.push("90000 cav and 360 galley @ 10.5 days");
                 troopcounw.push([0,0,0,0,0,0,0,0,0,0,90000,0,0,0,360,0,0]);
                 resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
-                ww++;
-                selectbuttsw+='<option value="'+ww+'">5 sec sorc/galley</option>';
+                cww++;
+                selectbuttsw+='<option value="'+cww+'">5 sec sorc/galley</option>';
                 layoutsw.push("[ShareString.1.3];########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##JBJBJ##-----##----##BJBJBJB##----##----#JBJBJBJBJ#----##----#JBJBJBJBJ#---H#######JBJBTBJBJ#######----#JBJBJBJBJ#-S-X##----#JBJBJBJBJ#----##----##BJBJBJB##JJ--##-----##JBJBJ##BBBBJ##------#######BBVVBB##---------#--JBV##VB##---------#--JBV###V###--------#---BBV#######-------#---JBBV########################");
                 remarksw.push("sorc/galley"); notesw.push("156600 sorc and 314 galley @ 13.5 days");
                 troopcounw.push([0,0,0,0,0,0,156600,0,0,0,0,0,0,0,314,0,0]);
                 resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
-                ww++;
-                selectbuttsw+='<option value="'+ww+'">vanqs+ports+senator</option>';
+                cww++;
+                selectbuttsw+='<option value="'+cww+'">vanqs+ports+senator</option>';
                 layoutsw.push("[ShareString.1.3];########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##BBBBB##-----##----##BBGBGBB##----##----#BGBGBGBGB#----##----#BGBBBBBGB#----#######BBBGTGBBB#######----#BGBBBBBGB#PPJX##----#BGBGBGBGB#BBBB##----##BBGBGBB##BBBB##-----##BBBBB##BBBBB##------#######-BRRBB##---------#----R##RZ##---------#----R###R###--------#----SR#######-------#----MSR########################");
                 remarksw.push("vanqs+senator+ports"); notesw.push("264k infantry @ 10 days");
                 troopcounw.push([0,0,0,100000,0,164000,0,0,0,0,0,0,0,0,0,0,0]);
                 resw.push([0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000]);
-                ww++;
-                selectbuttsw+='<option value="'+ww+'">main hub</option>';
+                cww++;
+                selectbuttsw+='<option value="'+cww+'">main hub</option>';
                 layoutsw.push("[ShareString.1.3];########################-------#-------#####--------#---PPPPP###---------#---PPPPPP##---------#---PPPPPP##------#######PPPPPP##-----##-----##PPPPP##----##SLSDSAS##PPPP##----#-SDSMSDS-#PPPP##----#-SLSMSAS-#PPPP#######-SDSTSDS-#######----#-SLSMSAS-#----##----#-SDSMSDS-#----##----##SLSDSAS##----##-----##-----##-----##------#######--RR--##---------#ZB--RTTR-##---------#PJ--RTTTR###--------#-----RTT#####-------#------R########################");
                 remarksw.push("main hub"); notesw.push("14 mil w/s 23 mil iron 15 mil food 8200 carts 240 boats");
                 troopcounw.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
                 resw.push([0,0,0,0,1,500000,500000,500000,500000,0,0,0,0,1,0,0,0,0,0,500000,500000,500000,500000]);
-                ww++;
-                selectbuttsw+='<option value="'+ww+'">palace storage</option>';
+                cww++;
+                selectbuttsw+='<option value="'+cww+'">palace storage</option>';
                 layoutsw.push("[ShareString.1.3]:########################-------#-----PP#####--------#-----PPP###---------#-----PPPP##---------#-----PPPP##------#######--PPPP##-----##SASLS##-PPPP##----##ASASLSL##PPPP##----#SASASLSLS#-PPP##----#SASASLSLS#JPPP#######SASA#LSLS#######----#SASASLSLS#----##----#SASASLSLS#----##----##ASASLSL##----##-----##SASLS##-----##------#######------##---------#---------##---------#---------###--------#--------#####-------#-------########################");
                 remarksw.push("palace storage"); notesw.push("40 mil w/s 6200 carts");
                 troopcounw.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
                 resw.push([0,0,0,0,1,500000,500000,500000,500000,0,0,0,0,1,0,0,0,0,0,500000,500000,500000,500000]);
-                ww++;
-                selectbuttsw+='<option value="'+ww+'">palace feeder</option>';
+                cww++;
+                selectbuttsw+='<option value="'+cww+'">palace feeder</option>';
                 layoutsw.push("[ShareString.1.3];########################-PPPPPP#PPPPPPP#####--PPPPPP#PPPPPPPP###---PPPPPP#PPPPPPPPP##---PPPPPP#PPPPPPPPP##----PP#######PPPPPP##-----##----J##PPPPP##----##-A-----##PPPP##----#-SSS-----#PPPP##----#-AAA-----#PPPP#######-SSST----#######----#-LLL-----#----##----#-SSS-----#----##----##-L-----##----##-----##-----##-----##------#######--__--##---------#----_##_-##---------#----_###_###--------#-----_#######-------#------_########################");
                 remarksw.push("palace feeder"); notesw.push("8.75 mil w/s 16400 carts");
                 troopcounw.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
                 resw.push([0,0,0,0,1,500000,500000,500000,500000,0,0,0,0,1,0,0,0,0,0,500000,500000,500000,500000]);
-                ww++;
-                selectbuttsw+='<option value="'+ww+'">palace Hub mixed</option>';
+                cww++;
+                selectbuttsw+='<option value="'+cww+'">palace Hub mixed</option>';
                 layoutsw.push("[ShareString.1.3];########################-------#PPPPPPP#####--------#PPPPPPPP###---------#PPPPPPPPP##---------#PPPPPPPPP##------#######PPPPPP##-----##-----##PPPPP##----##-------##PPPP##----#SLSASLSAS#PPPP##----#SASLSASLS#JPPP#######SLSATLSAS#######----#SASLSASLS#----##----#SLSASLSAS#----##----##-------##----##-----##-----##-----##------#######--__--##---------#----_TT_-##---------#----_TTT_###--------#-----_TT#####-------#------_########################");
                 remarksw.push("palace Hub mixed"); notesw.push("24.57 mil w/s 11000 carts");
                 troopcounw.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
                 resw.push([0,0,0,0,1,500000,500000,500000,500000,0,0,0,0,1,0,0,0,0,0,500000,500000,500000,500000]);
-                ww++;
-                selectbuttsw+='<option value="'+ww+'">Stingers</option>';
+                cww++;
+                selectbuttsw+='<option value="'+cww+'">Stingers</option>';
                 layoutsw.push("[ShareString.1.3];########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##-----##-----##----##-------##----##----#---------#----##----#---------#----#######----T----#######----#---------#SPHX##----#---------#-M--##----##-------##----##-----##-----##BBBB-##------#######BBVVBB##---------#---BVTTVB##---------#---BVTTTV###--------#---BBVTT#####-------#----BBV########################");
                 remarksw.push("stingers"); notesw.push("3480 stingers @ 84 days");
                 troopcounw.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3480,0]);
                 resw.push([0,0,0,0,1,500000,500000,500000,500000,0,0,0,0,1,0,0,0,0,0,500000,500000,500000,500000]);
-                ww++;
-                selectbuttsw+='<option value="'+ww+'">Warships</option>';
+                cww++;
+                selectbuttsw+='<option value="'+cww+'">Warships</option>';
                 layoutsw.push("[ShareString.1.3];########################-------#-------#####--------#--------###---------#---------##---------#---------##------#######------##-----##-----##-----##----##-------##----##----#---------#----##----#---------#----#######----T----#######----#---------#SPHX##----#---------#-M--##----##-------##----##-----##-----##BBBB-##------#######BBVVBB##---------#---BVTTVB##---------#---BVTTTV###--------#---BBVTT#####-------#----BBV########################");
                 remarksw.push("warships"); notesw.push("870 warships @ 42 days");
                 troopcounw.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,870]);
@@ -3559,15 +3810,11 @@
                             }
                             //$('#removeoverlayGo').click();
                             $('#overlaytextarea').val(newlayout);
-                            setTimeout(function(){$('#applyoverlayGo').click();},300);
+                            setTimeout(function(){jQuery("#applyoverlayGo")[0].click();},300);
                             if ($("#addnotes").prop("checked")==true) {
-                                //setTimeout(function(){$('#citynotesTab').click();},200);
-                                //$('#CNremarks').val("");
-                                //$('#citynotestextarea').val("");
-                                //setTimeout(function(){$('#citnotesaveb').click();},100);
                                 $('#CNremarks').val(remarksl[j]);
                                 $('#citynotestextarea').val(notesl[j]);
-                                setTimeout(function(){$('#citnotesaveb').click(); },100);
+                                setTimeout(function(){jQuery("#citnotesaveb")[0].click(); },100);
                             }
                             var aa=city.mo;
                             if ($("#addtroops").prop("checked")==true) {
@@ -3637,17 +3884,12 @@
                                     newlayout=newlayout.replaceAt(i,tmpchar);
                                 }
                             }
-                            //$('#removeoverlayGo').click();
                             $('#overlaytextarea').val(newlayout);
-                            setTimeout(function(){$('#applyoverlayGo').click();},300);
+                            setTimeout(function(){jQuery("#applyoverlayGo")[0].click();},300);
                             if ($("#addnotes").prop("checked")==true) {
-                                //setTimeout(function(){$('#citynotesTab').click();},200);
-                                //$('#CNremarks').val("");
-                                //$('#citynotestextarea').val("");
-                                //setTimeout(function(){$('#citnotesaveb').click();},100);
                                 $('#CNremarks').val(remarksw[j]);
                                 $('#citynotestextarea').val(notesw[j]);
-                                setTimeout(function(){$('#citnotesaveb').click(); },100);
+                                setTimeout(function(){jQuery("#citnotesaveb")[0].click(); },100);
                             }
                             var aa=city.mo;
                             if ($("#addtroops").prop("checked")==true) {
@@ -3706,10 +3948,10 @@
                 });
                 $('#dfunkylayout').change(function() {
                     var newlayout=currentlayout;
-                    for (var j=1; j<layoutsw.length; j++) {
+                    for (var j=1; j<layoutdf.length; j++) {
                         if ($('#dfunkylayout').val()==j) {
                             for (var i=20; i<currentlayout.length;i++) {
-                                var tmpchar=layoutsw[j].charAt(i);
+                                var tmpchar=layoutdf[j].charAt(i);
                                 var cmp=new RegExp(tmpchar);
                                 if (!(cmp.test(emptyspots))) {
                                     newlayout=newlayout.replaceAt(i,tmpchar);
@@ -3717,20 +3959,16 @@
                             }
                             //$('#removeoverlayGo').click();
                             $('#overlaytextarea').val(newlayout);
-                            setTimeout(function(){$('#applyoverlayGo').click();},300);
+                            setTimeout(function(){jQuery("#applyoverlayGo")[0].click();},300);
                             if ($("#addnotes").prop("checked")==true) {
-                                //setTimeout(function(){$('#citynotesTab').click();},200);
-                                //$('#CNremarks').val("");
-                                //$('#citynotestextarea').val("");
-                                //setTimeout(function(){$('#citnotesaveb').click();},100);
-                                $('#CNremarks').val(remarksw[j]);
-                                $('#citynotestextarea').val(notesw[j]);
-                                setTimeout(function(){$('#citnotesaveb').click(); },100);
+                                $('#CNremarks').val(remarkdf[j]);
+                                $('#citynotestextarea').val(notedf[j]);
+                                setTimeout(function(){jQuery("#citnotesaveb")[0].click(); },100);
                             }
                             var aa=city.mo;
                             if ($("#addtroops").prop("checked")==true) {
-                                for (var k in troopcounw[j]) {
-                                    aa[9+Number(k)]=troopcounw[j][k];
+                                for (var k in troopcound[j]) {
+                                    aa[9+Number(k)]=troopcound[j][k];
                                 }
                             }
                             if ($("#addwalls").prop("checked")==true) {
@@ -3753,23 +3991,19 @@
                                 }
                                 var mindist = Math.min.apply(Math, hubs.distance);
                                 var nearesthub=hubs.cid[hubs.distance.indexOf(mindist)];
-                                resw[j][14]=nearesthub;
-                                resw[j][15]=nearesthub;
+                                resd[j][14]=nearesthub;
+                                resd[j][15]=nearesthub;
                             } else {
-                                resw[j][14]=0;
-                                resw[j][15]=0;
+                                resd[j][14]=0;
+                                resd[j][15]=0;
                             }
                             if ($("#addres").prop("checked")==true) {
-                                resw[j][5]=$("#woodin").val();
-                                resw[j][6]=$("#stonein").val();
-                                resw[j][7]=$("#ironin").val();
-                                resw[j][8]=$("#foodin").val();
-                                resw[j][19]=$("#woodin").val();
-                                resw[j][20]=$("#stonein").val();
-                                resw[j][21]=$("#ironin").val();
-                                resw[j][22]=$("#foodin").val();
-                                for (var k in resw[j]) {
-                                    aa[28+Number(k)]=resw[j][k];
+                                resd[j][5]=$("#woodin").val();
+                                resd[j][6]=$("#stonein").val();
+                                resd[j][7]=$("#ironin").val();
+                                resd[j][8]=$("#foodin").val();
+                                for (var k in resd[j]) {
+                                    aa[28+Number(k)]=resd[j][k];
                                 }
                             }
                             if ($("#addbuildings").prop("checked")==true) {
@@ -3787,7 +4021,7 @@
     });
     //setting nearest hub to a city
     function setnearhub() {
-        var res=[0,0,0,0,1,150000,220000,150000,350000,0,0,0,0,1,0,0,0,0,0,150000,220000,150000,350000];
+        var res=[0,0,0,0,1,130000,130000,0,0,0,0,0,0,1,0,0,0,0,0,300000,300000,300000,400000];
         var aa=city.mo;
         var hubs={cid:[],distance:[]};
         $.each(clc, function(key, value) {
@@ -3802,18 +4036,72 @@
         }
         var mindist = Math.min.apply(Math, hubs.distance);
         var nearesthub=hubs.cid[hubs.distance.indexOf(mindist)];
-        //aa[42]=nearesthub;
-        //aa[43]=nearesthub;
+        if ($("#addwalls").prop("checked")==true) {
+            aa[26]=1;
+        }
+        if ($("#addtowers").prop("checked")==true) {
+            aa[27]=1;
+        }
+        if ($("#addbuildings").prop("checked")==true) {
+            aa[51]=[1,$("#cablev").val()];
+            aa[68]=[1,10];
+            aa[69]=[1,10];
+            aa[70]=[1,10];
+            aa[71]=[1,10];
+            aa[1]=1;
+        }
         res[14]=nearesthub;
         res[15]=nearesthub;
         res[5]=$("#woodin").val();
         res[6]=$("#stonein").val();
         res[7]=$("#ironin").val();
         res[8]=$("#foodin").val();
-        res[19]=$("#woodin").val();
-        res[20]=$("#stonein").val();
-        res[21]=$("#ironin").val();
-        res[22]=$("#foodin").val();
+        for (var k in res) {
+            aa[28+Number(k)]=res[k];
+        }
+        var dat={a:JSON.stringify(aa),b:cdata.cid};
+        jQuery.ajax({url: 'includes/mnio.php',type: 'POST',aysnc:false,data: dat});
+    }
+    //infantry setup
+    function setinfantry() {
+        var res=[0,0,0,0,1,200000,220000,200000,350000,0,0,0,0,1,0,0,0,0,0,300000,300000,300000,400000];
+        var aa=city.mo;
+        var hubs={cid:[],distance:[]};
+        $.each(clc, function(key, value) {
+            if (key==$("#selHub").val()) {
+                hubs.cid=value;
+            }
+        });
+        for (var i in hubs.cid) {
+            var tempx=Number(hubs.cid[i] % 65536);
+            var tempy=Number((hubs.cid[i]-tempx)/65536);
+            hubs.distance.push(Math.sqrt((tempx-city.x)*(tempx-city.x)+(tempy-city.y)*(tempy-city.y)));
+        }
+        var mindist = Math.min.apply(Math, hubs.distance);
+        var nearesthub=hubs.cid[hubs.distance.indexOf(mindist)];
+        if ($("#addwalls").prop("checked")==true) {
+            aa[26]=1;
+        }
+        if ($("#addtowers").prop("checked")==true) {
+            aa[27]=1;
+        }
+        if ($("#addbuildings").prop("checked")==true) {
+            aa[51]=[1,$("#cablev").val()];
+            aa[60]=[1,10];
+            aa[62]=[1,10];
+            aa[68]=[1,10];
+            aa[69]=[1,10];
+            aa[70]=[1,10];
+            aa[71]=[1,10];
+            aa[73]=[1,10];
+            aa[1]=1;
+        }
+        res[14]=nearesthub;
+        res[15]=nearesthub;
+        res[5]=$("#woodin").val();
+        res[6]=$("#stonein").val();
+        res[7]=$("#ironin").val();
+        res[8]=$("#foodin").val();
         for (var k in res) {
             aa[28+Number(k)]=res[k];
         }
@@ -4382,5 +4670,183 @@
                 $("#cityDropdownMenu").val(aa).change();
             });
         });
+    }
+    //hiding cities in shrine planner
+    function hidecities() {
+        $("#shrineTab tr").each(function () {
+            if($(this).attr("data")=="city") {
+                $(this).hide();
+            }
+        });
+    }
+    //showing cities in shrine planner
+    function showcities() {
+        $("#shrineTab tr").each(function () {
+            if($(this).attr("data")=="city") {
+                $(this).show();
+            }
+        });
+    }
+    //updating shrine enlightment list
+    function updateshrine() {
+        var shrinetab="<table id='shrineTab'><thead><th style='width:115px'>Change</th><th style='width:50px'>Chances</th><th>Distance</th><th>Player</th><th>City</th><th>Coords</th><th style='width:100px'>Alliance</th><th>score</th><th>Type</th></thead><tbody>";
+        var ccounter=0;
+        var w=[];
+        var wtot=0;
+        for (var i in shrinec) {
+            if (i>0) {
+                var k=splayers.name.indexOf(shrinec[i][1]);
+                //console.log(k,splayers);
+                for (var j in splayers.cities[k]) {
+                    if (shrinec[i][3]==splayers.cities[k][j].b && shrinec[i][4]==splayers.cities[k][j].c) {
+                        shrinec[i][2]=splayers.cities[k][j].h;
+                        if (shrinec[i][9]==0) {
+                            shrinec[i][7]=splayers.cities[k][j].a;
+                        }
+                        shrinec[i][8]=splayers.ally[k];
+                    }
+                }
+                if (shrinec[i][0]=="castle") {
+                    ccounter++;
+                    if (ccounter<17) {
+                        w[ccounter]=shrinec[i][7]/shrinec[i][5];
+                        wtot+=shrinec[i][7]/(shrinec[i][5]);
+                    }
+                }
+            }
+        }
+        for (var i in w) {
+            w[i]=Math.round(w[i]/wtot*100);
+        }
+        //console.log(shrinec);
+        var ccounter=0;
+        for (var i in shrinec) {
+            if (i>0) {
+                var cid=shrinec[i][4]*65536+Number(shrinec[i][3]);
+                if (shrinec[i][0]=="castle") {
+                    ccounter++;
+                    if (ccounter<17) {
+                        if (shrinec[i][6]=="0") {
+                            shrinetab+="<tr style='color:purple;'><td><button data='"+i+"' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 4px;'>x</button>";
+                            shrinetab+="<button id='"+i+"' data='castle' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding-top: 3px;border-radius: 4px;'>City</button>";
+                            shrinetab+="<button data='"+i+"' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>10k</button>";
+                            shrinetab+="<button data='"+i+"' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>7pt</button></td><td>"+ccounter+" - "+w[ccounter]+"% "+"</td>";
+                        } else {
+                            shrinetab+="<tr style='color:green;'><td><button data='"+i+"' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 4px;'>x</button>";
+                            shrinetab+="<button id='"+i+"' data='castle' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding-top: 3px;border-radius: 4px;'>City</button>";
+                            shrinetab+="<button data='"+i+"' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>10k</button>";
+                            shrinetab+="<button data='"+i+"' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>7pt</button></td><td>"+ccounter+" - "+w[ccounter]+"% "+"</td>";
+                        }
+                    } else if (ccounter>=17 && ccounter<21) {
+                        shrinetab+="<tr><td><button data='"+i+"' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 4px;'>x</button>";
+                        shrinetab+="<button id='"+i+"' data='castle' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding-top: 3px;border-radius: 4px;'>City</button>";
+                        shrinetab+="<button data='"+i+"' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>10k</button>";
+                        shrinetab+="<button data='"+i+"' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>7pt</button></td><td>"+ccounter+"</td>";
+                    }
+                } else {
+                    if (shrinec[i][6]=="0") {
+                        shrinetab+="<tr style='color:grey;' data='city'><td><button data='"+i+"' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 4px;'>x</button>";
+                        shrinetab+="<button id='"+i+"' data='city' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding: 3px;border-radius: 4px;width:37px;'>Castle</button>";
+                        shrinetab+="<button data='"+i+"' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>10k</button>";                            
+                        shrinetab+="<button data='"+i+"' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>7pt</button></td><td></td>";
+                    } else {
+                        shrinetab+="<tr style='color:#74A274;'><td><button data='"+i+"' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 4px;'>x</button>";
+                        shrinetab+="<button id='"+i+"' data='city' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding: 3px;border-radius: 4px;width:37px;'>Castle</button>";
+                        shrinetab+="<button data='"+i+"' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>10k</button>";
+                        shrinetab+="<button data='"+i+"' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>7pt</button></td><td></td>";
+                    }
+                }
+                shrinetab+="<td>"+roundToTwo(shrinec[i][5])+"</td><td class='playerblink'>"+shrinec[i][1]+"</td><td>"+shrinec[i][2]+"</td><td class='coordblink shcitt' data='"+cid+"'>"+shrinec[i][3]+":"+shrinec[i][4]+"</td><td class='allyblink'>"+shrinec[i][8]+"</td><td>"+shrinec[i][7]+"</td><td>"+shrinec[i][0]+"</td></tr>";
+                if (ccounter==20) {
+                    break;
+                }
+            }
+        }
+        shrinetab+="</tbody></table>";
+        $("#shrinediv").html(shrinetab);
+        $("#shrineTab td").css("text-align","center");
+        if (localStorage.getItem("hidecities")=="1") {
+            hidecities();
+            //console.log("hiding");
+        }
+        $(".shrinechange").click(function() {
+            if ($(this).attr("data")=="castle") {
+                shrinec[$(this).attr("id")][0]="city";
+            } else {
+                shrinec[$(this).attr("id")][0]="castle";
+            }
+            if (shrinec[$(this).attr("id")][6]=="0") {
+                shrinec[$(this).attr("id")][6]=1;
+            } else {
+                shrinec[$(this).attr("id")][6]=0;
+            }
+            updateshrine();
+        });
+        $(".shrineremove").click(function() {
+            shrinec.splice($(this).attr("data"),1);
+            updateshrine();
+        });
+        $(".shrine7pt").click(function() {
+            if (shrinec[$(this).attr("data")][7]!=7) {
+                shrinec[$(this).attr("data")][7]=7;
+                shrinec[$(this).attr("data")][9]=1;
+                shrinec[$(this).attr("data")][6]=1;
+            } else {
+                shrinec[$(this).attr("data")][9]=0;
+                shrinec[$(this).attr("data")][6]=0;
+            }
+            updateshrine();
+        });
+        $(".shrine10k").click(function() {
+            if (shrinec[$(this).attr("data")][7]!=10000) {
+                shrinec[$(this).attr("data")][7]=10000;
+                shrinec[$(this).attr("data")][9]=1;
+                shrinec[$(this).attr("data")][6]=1;
+            } else {
+                shrinec[$(this).attr("data")][9]=0;
+                shrinec[$(this).attr("data")][6]=0;
+            }
+            updateshrine();
+        });
+    }
+    // exporting table to csv file taken from https://gist.github.com/adilapapaya/9787842
+    function exportTableToCSV($table, filename) {
+        var $headers = $table.find('tr:has(th)')
+        ,$rows = $table.find('tr:has(td)')
+        // Temporary delimiter characters unlikely to be typed by keyboard
+        // This is to avoid accidentally splitting the actual contents
+        ,tmpColDelim = String.fromCharCode(11) // vertical tab character
+        ,tmpRowDelim = String.fromCharCode(0) // null character
+        // actual delimiter characters for CSV format
+        ,colDelim = '","'
+        ,rowDelim = '"\r\n"';
+        // Grab text from table into CSV formatted string
+        var csv = '"';
+        csv += formatRows($headers.map(grabRow));
+        csv += rowDelim;
+        csv += formatRows($rows.map(grabRow)) + '"';
+        // Data URI
+        var csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+        $(this).attr({'download': filename,'href': csvData}); //,'target' : '_blank' //if you want it to open in a new window          
+        //------------------------------------------------------------
+        // Helper Functions
+        //------------------------------------------------------------
+        // Format the output so it has the appropriate delimiters
+        function formatRows(rows){return rows.get().join(tmpRowDelim).split(tmpRowDelim).join(rowDelim).split(tmpColDelim).join(colDelim);}
+        // Grab and format a row from the table
+        function grabRow(i,row){
+            var $row = $(row);
+            //for some reason $cols = $row.find('td') || $row.find('th') won't work...
+            var $cols = $row.find('td');
+            if(!$cols.length) $cols = $row.find('th');
+                return $cols.map(grabCol)
+                    .get().join(tmpColDelim);
+        }
+        // Grab and format a column from the table
+        function grabCol(j,col){
+                var $col = $(col),
+                $text = $col.text();
+                return $text.replace('"', '""'); // escape double quotes
+        }
     }
 })();
