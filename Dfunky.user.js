@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Cotg Dfunky
 // @namespace https://github.com/Dkhub85/COTG-Dfunky
-// @version 1.0.1
+// @version 1.0.2
 // @description Cotg Dfunky
 // @author Dhruv
 // @match https://w14.crownofthegods.com
@@ -128,29 +128,6 @@
 	var buildingdata;
 	var coofz;
 	var coon;
-	//getting city lists
-	$(document).ready(function () {
-		setTimeout(function () {
-			var a = $("#organiser > option");
-			var l = a.length;
-			for (var i = 0; i < l; i++) {
-				var temp = String($(a[i]).attr("value"));
-				$("#organiser").val(temp).change();
-				clc[temp] = [];
-				var tempcl = $("#cityDropdownMenu > option");
-				var ll = tempcl.length;
-				if (cdata.cg.indexOf(temp) > -1) {
-					clc[temp].push($(tempcl[0]).attr("value"));
-				}
-				if (ll > 1) {
-					for (var j = 1; j < ll; j++) {
-						clc[temp].push($(tempcl[j]).attr("value"));
-					}
-				}
-			}
-			$("#organiser").val("all").change();
-		}, 4000);
-	});
 	setTimeout(function () {
 		(function (open) {
 			XMLHttpRequest.prototype.open = function () {
@@ -168,7 +145,8 @@
 							city.cont = Number(Math.floor(city.x / 100) + 10 * Math.floor(city.y / 100));
 							city.mo = cdata.mo;
 							setTimeout(function () {
-								updateattack();
+								citylists();
+                                updateattack();
 								updatedef();
 							}, 2000);
 							makebuildcount();
@@ -187,7 +165,7 @@
 							if (poll2) {
 								var saveclc = poll2.player.clc;
 								var saveoga = poll2.OGA;
-								clc = poll2.player.clc;
+								clc = poll2.player.clc || clc;//wtf
 							}
 							poll2 = JSON.parse(this.response);
 							city.x = Number(poll2.city.cid % 65536);
@@ -1406,6 +1384,26 @@
 			}
 		}
 	}
+    function citylists() {
+        var a = $("#organiser > option");
+        var l = a.length;
+        for (var i = 0; i < l; i++) {
+            var temp = String($(a[i]).attr("value"));
+            $("#organiser").val(temp).change();
+            clc[temp] = [];
+            var tempcl = $("#cityDropdownMenu > option");
+            var ll = tempcl.length;
+            if (cdata.cg.indexOf(temp) > -1) {
+                clc[temp].push($(tempcl[0]).attr("value"));
+            }
+            if (ll > 1) {
+                for (var j = 1; j < ll; j++) {
+                    clc[temp].push($(tempcl[j]).attr("value"));
+                }
+            }
+        }
+        $("#organiser").val("all").change();
+    }
 	function updateattack() {
 		var t = {
 			home: [],
