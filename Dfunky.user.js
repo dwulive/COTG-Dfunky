@@ -23,7 +23,7 @@
 
 		setTimeout(function () {
 			var options = {};
-			$('#HelloWorld').hide('drop', options, 2000);
+			$('#HelloWorld').hide();
 		}, 5000);
 
 	});
@@ -146,7 +146,7 @@
 							city.mo = cdata.mo;
 							setTimeout(function () {
 								citylists();
-                                updateattack();
+								updateattack();
 								updatedef();
 							}, 2000);
 							makebuildcount();
@@ -165,7 +165,7 @@
 							if (poll2) {
 								var saveclc = poll2.player.clc;
 								var saveoga = poll2.OGA;
-								clc = poll2.player.clc || clc;//wtf
+								clc = poll2.player.clc || clc;
 							}
 							poll2 = JSON.parse(this.response);
 							city.x = Number(poll2.city.cid % 65536);
@@ -446,13 +446,15 @@
 				ttspeedres[17] += ((Number(domdisfaith) * 0.5) / 100) + (Number(Res[research[14]]) / 100);
 			}, 2000);
 		}
-        var ckey=Aes.Ctr.encrypt(currentTime(), '1QA64sa23511sJx1e2', 256);
-        var cdat={a:ckey};
+		var ckey = Aes.Ctr.encrypt(currentTime(), '1QA64sa23511sJx1e2', 256);
+		var cdat = {
+			a: ckey
+		};
 		jQuery.ajax({
 			url: 'includes/pD.php',
 			type: 'POST',
 			aysnc: false,
-            data: cdat,
+			data: cdat,
 			success: function (data) {
 				pdata = JSON.parse(data);
 			}
@@ -1384,26 +1386,26 @@
 			}
 		}
 	}
-    function citylists() {
-        var a = $("#organiser > option");
-        var l = a.length;
-        for (var i = 0; i < l; i++) {
-            var temp = String($(a[i]).attr("value"));
-            $("#organiser").val(temp).change();
-            clc[temp] = [];
-            var tempcl = $("#cityDropdownMenu > option");
-            var ll = tempcl.length;
-            if (cdata.cg.indexOf(temp) > -1) {
-                clc[temp].push($(tempcl[0]).attr("value"));
-            }
-            if (ll > 1) {
-                for (var j = 1; j < ll; j++) {
-                    clc[temp].push($(tempcl[j]).attr("value"));
-                }
-            }
-        }
-        $("#organiser").val("all").change();
-    }
+	function citylists() {
+		var a = $("#organiser > option");
+		var l = a.length;
+		for (var i = 0; i < l; i++) {
+			var temp = String($(a[i]).attr("value"));
+			$("#organiser").val(temp).change();
+			clc[temp] = [];
+			var tempcl = $("#cityDropdownMenu > option");
+			var ll = tempcl.length;
+			if (cdata.cg.indexOf(temp) > -1) {
+				clc[temp].push($(tempcl[0]).attr("value"));
+			}
+			if (ll > 1) {
+				for (var j = 1; j < ll; j++) {
+					clc[temp].push($(tempcl[j]).attr("value"));
+				}
+			}
+		}
+		$("#organiser").val("all").change();
+	}
 	function updateattack() {
 		var t = {
 			home: [],
@@ -2060,13 +2062,13 @@
 	}
 	//Buttons convert,fill,demolish,building count
 	$(document).ready(function () {
-		var fourbutton = "<div id='fourbuttons' class='commandinndiv'><div><button id='fb1' style='height:28px; width:65px; margin-left:7px; margin-bottom:5px ; border-radius:4px ; font-size: 10px !important; padding: 0px;' class='regButton greenb'>ON/OFF</button><button id='fb2' style='height:28px; width:65px; margin-left:7px; margin-bottom:5px ; border-radius:4px ; font-size: 10px !important; padding: 0px;' class='regButton greenb'>Refine</button><button id='fb3' style='height:28px; width:65px; margin-left:7px; margin-bottom:5px ; border-radius:4px ; font-size: 10px !important; padding: 0px;' class='regButton greenb'>Raid</button><button id='fb4' style='height:28px; width:65px; margin-left:7px; margin-bottom:5px ; border-radius:4px ; font-size: 10px !important; padding: 0px;' class='regButton greenb'>Demolish</button></div></div>";
+		var fourbutton = "<div id='fourbuttons' class='commandinndiv'><div sytle="padding-top: 5px;"><button id='fb1' style='height:28px; width:65px; margin-left:7px; margin-bottom:5px ; border-radius:0px ; font-size: 10px !important; padding: 0px;' class='regButton greenb'>ON/OFF</button><button id='fb2' style='height:28px; width:65px; margin-left:7px; margin-bottom:5px ; border-radius:0px ; font-size: 10px !important; padding: 0px;' class='regButton greenb'>Refine</button><button id='fb3' style='height:28px; width:65px; margin-left:7px; margin-bottom:5px ; border-radius:0px ; font-size: 10px !important; padding: 0px;' class='regButton greenb'>Raid</button><button id='fb4' style='height:28px; width:65px; margin-left:7px; margin-bottom:5px ; border-radius:0px ; font-size: 10px !important; padding: 0px;' class='regButton greenb'>Demolish</button></div></div>";
 		var bdcountbox = "<div id='currentBd'><div id='bdcountbar' class='queueBar'>";
 		bdcountbox += "<div id='bdcountbut' class='tradeqarr2'><div></div></div><span class='qbspan'>Current Buildings</span>";
 		bdcountbox += "<div id='numbdleft' class='barRightFloat tooltipstered'>0</div>";
 		bdcountbox += "</div><div id='bdcountwin' class='queueWindow' style='display: block;'></div></div>";
 		$("#buildQueue").before(fourbutton);
-		var fillbut = '<button id="fillque" class="greenb tooltipstered" style="height:18px; width:40px; margin-left:7px; margin-top:5px ; border-radius:4px ; font-size: 10px !important; padding: 0px;">Fill</button>';
+		var fillbut = '<button id="fillque" class="greenb tooltipstered" style="height:18px; width:40px; margin-left:7px; margin-top:5px ; border-radius:0px ; font-size: 10px !important; padding: 0px;">Fill</button>';
 		$('#sortbut').after(fillbut);
 		$('#fillque').click(function () {
 			var dfs = poll2.city.cid;
@@ -2076,7 +2078,7 @@
 					a: dfs
 				});
 		});
-		var convbut = '<button id="convque" class="greenb tooltipstered" style="height:18px; width:60px; margin-left:7px; margin-top:5px ; border-radius:4px ; font-size: 10px !important; padding: 0px;">Convert</button>';
+		var convbut = '<button id="convque" class="greenb tooltipstered" style="height:18px; width:60px; margin-left:7px; margin-top:5px ; border-radius:0px ; font-size: 10px !important; padding: 0px;">Convert</button>';
 		$('#sortbut').after(convbut);
 		$('#convque').click(function () {
 			var cfd = poll2.city.cid;
@@ -3699,8 +3701,11 @@
 	}
 	//raiding part, cancel allt attack part
 	$(document).ready(function () {
-		var newbutz = "<div style='float: left; margin-left: 2%;'><button id='newbuttonu' style='font-size:8px; padding: 4px; border-radius: 8px;' class='greenb shRnTr'>Recall(<90%)</button></div>";
-		$("#totalTS").before(newbutz);
+		var newbutz = "<div style='float: right; margin-right: 3%;'><button id='newbuttonu' style='font-size:10px; padding: 4px; border-radius: 0px;' class='greenb shRnTr'>Recall (<90%)</button></div>";
+		$("#totalTS").before(newbutz).css({
+			float: "left",
+			marginLeft: "5%"
+		});
 		$("#newbuttonu").click(function () {
 			setTimeout(function () {
 				recallraidl100();
@@ -4119,7 +4124,7 @@
 			$("#selHub").remove();
 			var selhub = $("#organiser").clone(false).attr({
 					id: "selHub",
-					style: "width:100%;height:28px;font-size:11;border-radius:6px;margin:7px"
+					style: "width:100%;height:28px;font-size:11;border-radius:0px;margin:7px"
 				});
 			$("#selhublist").append(selhub);
 			if (localStorage.getItem('hublist')) {
@@ -4776,23 +4781,23 @@
 		sumwin += "<div id='sumdiv' class='beigetabspopup' style='background:none;border: none;padding: 0px;height:74%;'><ul id='sumtabs' role='tablist'><li role='tab'><a href='#resTab' role='presentation'>Resources</a></li>";
 		sumwin += "<li role='tab'><a href='#troopsTab' role='presentation'>Troops</a></li><li role='tab'><a href='#raidTab' role='presentation'>Raids</a></li><li role='tab'><a href='#raidoverTab' role='presentation'>Raids Overview</a></li>";
 		sumwin += "<li role='tab'><a href='#supportTab' role='presentation'>Support</a></li></ul>";
-		sumwin += "<div id='resTab'><button id='resup' class='greenb' style='font-size:14px;border-radius:6px; margin:4px;'>Update</button><span style='margin-left:50px;'>Show cities from: </span>";
+		sumwin += "<div id='resTab'><button id='resup' class='greenb' style='font-size:14px;border-radius:0px; margin:4px;'>Update</button><span style='margin-left:50px;'>Show cities from: </span>";
 		sumwin += "<div class='beigemenutable scroll-pane' style='width:99%;height:100%;margin-left:4px;' ><table id='restable'>";
 		sumwin += "<thead><th>Name</th><th colspan='2'>Notes</th><th>Coords</th><th>Wood</th><th>(Storage)</th><th>Stones</th><th>(Storage)</th><th>Iron</th><th>(Storage)</th><th>Food</th><th>(Storage)</th><th>Carts</th><th>(Total)</th><th>Ships</th><th>(Total)</th><th>Score</th></thead></table></div></div>";
-		sumwin += "<div id='troopsTab'><button id='troopsup' class='greenb' style='font-size:14px;border-radius:6px;margin:4px;'>Update</button><span style='margin-left:50px;'>Show cities from: </span>";
+		sumwin += "<div id='troopsTab'><button id='troopsup' class='greenb' style='font-size:14px;border-radius:0px;margin:4px;'>Update</button><span style='margin-left:50px;'>Show cities from: </span>";
 		sumwin += "<div  class='beigemenutable scroll-pane' style='width:99%;height:95%;margin-left:4px;'><table id='troopstable' style='width:250%'>";
 		sumwin += "<thead><tr data='0'><th>Name</th><th style='width:150px;'>Notes</th><th>Coords</th><th><div class='" + tpicdiv[8] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[1] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[11] + "'></div>(home)</th><th>(Total)</th></th>";
 		sumwin += "<th><div class='" + tpicdiv[14] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[0] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[10] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[9] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[4] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[12] + "'></div>(home)</th><th>(Total)</th>";
 		sumwin += "<th><div class='" + tpicdiv[2] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[13] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[7] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[17] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[6] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[15] + "'></div>(home)</th><th>(Total)</th>";
 		sumwin += "<th><div class='" + tpicdiv[3] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[5] + "'></div>(home)</th><th>(Total)</th><th><div class='" + tpicdiv[16] + "'></div>(home)</th><th>(Total)</th><th>TS(home)</th><th>(Total)</th>";
 		sumwin += "</tr></thead></table></div></div>";
-		sumwin += "<div id='raidTab'><button id='raidup' class='greenb' style='font-size:14px;border-radius:6px; margin:4px;'>Update</button><span style='margin-left:50px;'>Number of reports to show:</span><select id='raidsturnc' class='greensel'><option value='100'>100</option><option value='500'>500</option><option value='1000'>1000</option><option value='10000'>10000</option></select>";
+		sumwin += "<div id='raidTab'><button id='raidup' class='greenb' style='font-size:14px;border-radius:0px; margin:4px;'>Update</button><span style='margin-left:50px;'>Number of reports to show:</span><select id='raidsturnc' class='greensel'><option value='100'>100</option><option value='500'>500</option><option value='1000'>1000</option><option value='10000'>10000</option></select>";
 		sumwin += "<div class='beigemenutable scroll-pane' style='width:99%;height:110%;margin-left:4px;' ><table id='raidtable'>";
 		sumwin += "<thead><th>Report</th><th>Type</th><th>Cavern progress</th><th>losses</th><th>Carry</th><th>Date</th><th>Origin</th></thead></table></div></div>";
-		sumwin += "<div id='raidoverTab'><button id='raidoverup' class='greenb' style='font-size:14px;border-radius:6px; margin:4px;'>Update</button><span style='margin-left:50px;'>Show cities from: </span>";
+		sumwin += "<div id='raidoverTab'><button id='raidoverup' class='greenb' style='font-size:14px;border-radius:0px; margin:4px;'>Update</button><span style='margin-left:50px;'>Show cities from: </span>";
 		sumwin += "<div class='beigemenutable scroll-pane' style='width:99%;height:100%;margin-left:4px;' ><table id='raidovertable'>";
 		sumwin += "<thead><th></th><th>Name</th><th colspan='2'>Notes</th><th>Coords</th><th>Raids</th><th>Out</th><th>In</th><th>Raiding TS</th><th>Resources</th></thead></table></div></div>";
-		sumwin += "<div id='supportTab'><button id='supportup' class='greenb' style='font-size:14px;border-radius:6px; margin:4px;'>Update</button>";
+		sumwin += "<div id='supportTab'><button id='supportup' class='greenb' style='font-size:14px;border-radius:0px; margin:4px;'>Update</button>";
 		sumwin += "<div class='beigemenutable scroll-pane' style='width:99%;height:110%;margin-left:4px;' ><table id='supporttable'>";
 		sumwin += "<thead><th></th><th>Player</th><th>City</th><th>Coords</th><th>Alliance</th><th>TS supporting</th><th>TS sending</th><th>TS returning</th></thead></table></div></div>";
 		sumwin += "</div></div>";
@@ -4817,15 +4822,15 @@
 		$("#sumdiv").tabs();
 		var selres = $("#organiser").clone(false).attr({
 				id: "selRes",
-				style: "height: 30px;width:150px;font-size:14px;border-radius:6px;margin:7px"
+				style: "height: 30px;width:150px;font-size:14px;border-radius:0px;margin:7px"
 			});
 		var seltroops = $("#organiser").clone(false).attr({
 				id: "selTroops",
-				style: "height: 30px;width:150px;font-size:14px;border-radius:6px;margin:7px"
+				style: "height: 30px;width:150px;font-size:14px;border-radius:0px;margin:7px"
 			});
 		var selraids = $("#organiser").clone(false).attr({
 				id: "selRaids",
-				style: "height: 30px;width:150px;font-size:14px;border-radius:6px;margin:7px"
+				style: "height: 30px;width:150px;font-size:14px;border-radius:0px;margin:7px"
 			});
 		$("#resup").next().after(selres);
 		$("#troopsup").next().after(seltroops);
@@ -4993,7 +4998,7 @@
 			var not = notes.notes[notes.id.indexOf(cid)];
 			var x = Number(cid % 65536);
 			var y = Number((cid - x) / 65536);
-			raidovertab += "<tr data='" + cid + "'><td><button style='height: 20px;padding-top: 3px;border-radius:6px;' class='greenb recraid' data='" + cid + "'>Recall Raids</button></td>";
+			raidovertab += "<tr data='" + cid + "'><td><button style='height: 20px;padding-top: 3px;border-radius:0px;' class='greenb recraid' data='" + cid + "'>Recall Raids</button></td>";
 			raidovertab += "<td data='" + cid + "' class='coordblink raidclink'>" + this[1] + "</td><td colspan='2'>" + not + "</td><td class='coordblink shcitt' data='" + cid + "'>" + x + ":" + y + "</td><td>" + this[3] + "</td><td>" + this[6] + "</td><td>" + this[5] + "</td><td>" + this[4].toLocaleString() + "</td>";
 			raidovertab += "<td>" + (this[7] + this[8] + this[9] + this[10] + this[11]).toLocaleString() + "</td></tr>";
 		});
@@ -5026,7 +5031,7 @@
 		var supporttab = "<thead><th></th><th>Player</th><th>City</th><th>Coords</th><th>Alliance</th><th>TS supporting</th><th>TS sending</th><th>TS returning</th></thead><tbody>";
 		$.each(data, function () {
 			var tid = this[9][0][1];
-			supporttab += "<tr><td><button class='greenb expsup' style='height: 20px;padding-top: 3px;border-radius:6px;'>Expand</button><button data='" + tid + "' class='greenb recasup' style='height: 20px;padding-top: 3px;border-radius:6px;'>Recall all</button>";
+			supporttab += "<tr><td><button class='greenb expsup' style='height: 20px;padding-top: 3px;border-radius:0px;'>Expand</button><button data='" + tid + "' class='greenb recasup' style='height: 20px;padding-top: 3px;border-radius:0px;'>Recall all</button>";
 			supporttab += "</td><td class='playerblink'>" + this[0] + "</td><td>" + this[2] + "</td><td class='coordblink shcitt' data='" + tid + "'>" + this[3] + ":" + this[4] + "</td><td class='allyblink'>" + this[1] + "</td><td>" + this[6] + "</td><td>" + this[7] + "</td><td>" + this[8] + "</td></tr>";
 			supporttab += "<tr class='expsuptab'><td colspan='8'><div class='beigemenutable' style='width:98%;'><table><thead><th></th><th>City</th><th>Coords</th><th colspan='2'>Troops</th><th>Status</th><th>Arrival</th></thead><tbody>";
 			for (var i in this[9]) {
@@ -5039,7 +5044,7 @@
 					status = "Sending";
 					break;
 				case 2:
-					supporttab += "<tr style='color: green;'><td><button class='greenb recsup' data='" + id + "' style='height: 20px;padding-top: 3px;border-radius:6px;'>Recall</button></td>";
+					supporttab += "<tr style='color: green;'><td><button class='greenb recsup' data='" + id + "' style='height: 20px;padding-top: 3px;border-radius:0px;'>Recall</button></td>";
 					status = "Reinforcing";
 					break;
 				case 0:
@@ -5446,33 +5451,33 @@
 					ccounter++;
 					if (ccounter < 17) {
 						if (shrinec[i][6] == "0") {
-							shrinetab += "<tr style='color:purple;'><td><button data='" + i + "' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 4px;'>x</button>";
-							shrinetab += "<button id='" + i + "' data='castle' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding-top: 3px;border-radius: 4px;'>City</button>";
-							shrinetab += "<button data='" + i + "' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>10k</button>";
-							shrinetab += "<button data='" + i + "' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>7pt</button></td><td>" + ccounter + " - " + w[ccounter] + "% " + "</td>";
+							shrinetab += "<tr style='color:purple;'><td><button data='" + i + "' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 0px;'>x</button>";
+							shrinetab += "<button id='" + i + "' data='castle' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding-top: 3px;border-radius: 0px;'>City</button>";
+							shrinetab += "<button data='" + i + "' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 0px;'>10k</button>";
+							shrinetab += "<button data='" + i + "' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 0px;'>7pt</button></td><td>" + ccounter + " - " + w[ccounter] + "% " + "</td>";
 						} else {
-							shrinetab += "<tr style='color:green;'><td><button data='" + i + "' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 4px;'>x</button>";
-							shrinetab += "<button id='" + i + "' data='castle' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding-top: 3px;border-radius: 4px;'>City</button>";
-							shrinetab += "<button data='" + i + "' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>10k</button>";
-							shrinetab += "<button data='" + i + "' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>7pt</button></td><td>" + ccounter + " - " + w[ccounter] + "% " + "</td>";
+							shrinetab += "<tr style='color:green;'><td><button data='" + i + "' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 0px;'>x</button>";
+							shrinetab += "<button id='" + i + "' data='castle' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding-top: 3px;border-radius: 0px;'>City</button>";
+							shrinetab += "<button data='" + i + "' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 0px;'>10k</button>";
+							shrinetab += "<button data='" + i + "' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 0px;'>7pt</button></td><td>" + ccounter + " - " + w[ccounter] + "% " + "</td>";
 						}
 					} else if (ccounter >= 17 && ccounter < 21) {
-						shrinetab += "<tr><td><button data='" + i + "' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 4px;'>x</button>";
-						shrinetab += "<button id='" + i + "' data='castle' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding-top: 3px;border-radius: 4px;'>City</button>";
-						shrinetab += "<button data='" + i + "' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>10k</button>";
-						shrinetab += "<button data='" + i + "' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>7pt</button></td><td>" + ccounter + "</td>";
+						shrinetab += "<tr><td><button data='" + i + "' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 0px;'>x</button>";
+						shrinetab += "<button id='" + i + "' data='castle' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding-top: 3px;border-radius: 0px;'>City</button>";
+						shrinetab += "<button data='" + i + "' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 0px;'>10k</button>";
+						shrinetab += "<button data='" + i + "' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 0px;'>7pt</button></td><td>" + ccounter + "</td>";
 					}
 				} else {
 					if (shrinec[i][6] == "0") {
-						shrinetab += "<tr style='color:grey;' data='city'><td><button data='" + i + "' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 4px;'>x</button>";
-						shrinetab += "<button id='" + i + "' data='city' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding: 3px;border-radius: 4px;width:37px;'>Castle</button>";
-						shrinetab += "<button data='" + i + "' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>10k</button>";
-						shrinetab += "<button data='" + i + "' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>7pt</button></td><td></td>";
+						shrinetab += "<tr style='color:grey;' data='city'><td><button data='" + i + "' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 0px;'>x</button>";
+						shrinetab += "<button id='" + i + "' data='city' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding: 3px;border-radius: 0px;width:37px;'>Castle</button>";
+						shrinetab += "<button data='" + i + "' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 0px;'>10k</button>";
+						shrinetab += "<button data='" + i + "' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 0px;'>7pt</button></td><td></td>";
 					} else {
-						shrinetab += "<tr style='color:#74A274;'><td><button data='" + i + "' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 4px;'>x</button>";
-						shrinetab += "<button id='" + i + "' data='city' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding: 3px;border-radius: 4px;width:37px;'>Castle</button>";
-						shrinetab += "<button data='" + i + "' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>10k</button>";
-						shrinetab += "<button data='" + i + "' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 4px;'>7pt</button></td><td></td>";
+						shrinetab += "<tr style='color:#74A274;'><td><button data='" + i + "' class='greenb shrineremove' style='font-size: 10px;height: 20px;padding: 3px;width: 15px;border-radius: 0px;'>x</button>";
+						shrinetab += "<button id='" + i + "' data='city' class='greenb shrinechange' style='font-size: 10px;height: 20px;padding: 3px;border-radius: 0px;width:37px;'>Castle</button>";
+						shrinetab += "<button data='" + i + "' class='greenb shrine10k' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 0px;'>10k</button>";
+						shrinetab += "<button data='" + i + "' class='greenb shrine7pt' style='font-size: 10px;height: 20px;padding: 3px;width: 25px;border-radius: 0px;'>7pt</button></td><td></td>";
 					}
 				}
 				shrinetab += "<td>" + roundToTwo(shrinec[i][5]) + "</td><td class='playerblink'>" + shrinec[i][1] + "</td><td>" + shrinec[i][2] + "</td><td class='coordblink shcitt' data='" + cid + "'>" + shrinec[i][3] + ":" + shrinec[i][4] + "</td><td class='allyblink'>" + shrinec[i][8] + "</td><td>" + shrinec[i][7] + "</td><td>" + shrinec[i][0] + "</td></tr>";
