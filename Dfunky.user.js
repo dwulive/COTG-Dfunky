@@ -1395,7 +1395,7 @@
 			clc[temp] = [];
 			var tempcl = $("#cityDropdownMenu > option");
 			var ll = tempcl.length;
-			if (cdata.cg.indexOf(temp) > -1) {
+			if (cdata.cg && cdata.cg.indexOf(temp) > -1) {
 				clc[temp].push($(tempcl[0]).attr("value"));
 			}
 			if (ll > 1) {
