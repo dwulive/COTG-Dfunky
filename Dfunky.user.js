@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name Cotg Dfunky
-// @namespace https://github.com/Dkhub85/COTG-Dfunky
+// @namespace https://github.com/dwulive/COTG-Dfunky
 // @version 1.0.999
 // @description Cotg Dfunky
 // @author Dhruv
-// @match https://*.crownofthegods.com/*
+// @match https://w18.crownofthegods.com/*
+// @match https:*.crownofthegods.com/*
 // @include https://w/*.crownofthegods.com/World*
 // @require https://server.cotg.ovh/userscripts/crypt.js
 // @grant none
@@ -14,16 +15,8 @@
 
 (function () {
 	// popup message for players when they open the game.
-	$(document).ready(function () {
-		var popwin = "<div id='HelloWorld' style='width:400px;height:400px;background-color: #E2CBAC;-moz-border-radius: 10px;-webkit-border-radius: 10px;border-radius: 10px;border: 4px ridge #DAA520;position:absolute;right:40%;top:100px; z-index:1000000;'><div class=\"popUpBar\"> <span class=\"ppspan\">Welcome!</span><button id=\"cfunkyX\" onclick=\"$('#HelloWorld').remove();\" class=\"xbutton greenb\"><div id=\"xbuttondiv\"><div><div id=\"centxbuttondiv\"></div></div></div></button></div><div id='hellobody' class=\"popUpWindow\"><span style='margin-left: 5%;'> <h3 style='text-align:center;'>Welcome to Crown Of The Gods!</h3></span><br><br><span style='margin-left: 5%;'> <h4 style='text-align:center;'> DFunky(Cfunky + Dhruv's Raiding helper)</h4></span><br><span style='margin-left: 5%;'> <h4 style='text-align:center;'>Updated 1st sept 2018</h4></span><br><br><span style='margin-left: 5%;'><h4>changes:</h4> <ul style='margin-left: 6%;'><li>Added Offensive Troop mailing functionality, Added Shrine zone calculator(was in cfunky) (9-1-2018)</li></ul></span></div></div>";
-		$("body").append(popwin);
 
-		setTimeout(function () {
-			var options = {};
-			$('#HelloWorld').hide();
-		}, 5000);
 
-	});
 	var ttts = [1, 10, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 10, 10, 100, 100, 400, 1]; //ts per unit
 	var citytc;
 	var message = "Not enough TS to kill this boss!";
@@ -43,6 +36,7 @@
 	vexifaith = 0,
 	meriusfaith = 0,
 	evarafaith = 0; //alliance faiths
+	var defaultCarry = 1.2;
 	var ttspeedres = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 	var TS_type = [0, 0, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 0, 0, 0, 100, 400];
 	var Total_Combat_Research = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
@@ -2970,8 +2964,8 @@
 		var bossactive = data.info.active;
 		//       var troops = cotg.city.troops();
 		var home;
-		var optimalTS = Math.ceil((other_loot[lvl - 1] / 10 * ((1 - prog / 100) + 1)) * 1.02);
-		if (dtype === "dungeon") {
+		var optimalTS = Math.ceil((other_loot[lvl - 1] / 10 * ((1 - prog / 100) + 1)) * defaultCarry);
+				if (dtype === "dungeon") {
 			if ($("#cityplayerInfo div table tbody tr").length === 11) {
 				bossele();
 			}
@@ -3027,7 +3021,7 @@
 			if (type === "Mountain Cavern") {
 				document.getElementById('raidDungGo').onclick = function () {
 					setTimeout(function () {
-						var total_lootm = Math.ceil((mountain_loot[Number(lvl) - 1] * ((1 - Number(prog) / 100) + 1)) * 1.02);
+						var total_lootm = Math.ceil((mountain_loot[Number(lvl) - 1] * ((1 - Number(prog) / 100) + 1)) * defaultCarry);
 						if (home_loot > total_lootm) {
 							var option_numbersm = Math.floor(home_loot / total_lootm);
 							var templ1m = ((home_loot / total_lootm) * 100) / option_numbersm;
@@ -3042,7 +3036,7 @@
 						}
 					}, 1500);
 				};
-				var optimalTSM = Math.ceil((mountain_loot[lvl - 1] / 10 * ((1 - prog / 100) + 1)) * 1.02);
+				var optimalTSM = Math.ceil((mountain_loot[lvl - 1] / 10 * ((1 - Number(prog) *0.01) + 1)) * defaultCarry);
 				var cavoptim = Math.ceil((optimalTSM * 2) / 3);
 				var praoptim = Math.ceil(optimalTSM / 2);
 				var sorcoptim = Math.ceil(optimalTSM * 2);
@@ -3582,7 +3576,7 @@
 				var dunglvl = $(this).attr('lvl');
 				var progress = $(this).attr('prog');
 				var type_dung = $(this).attr('type');
-				if (type_dung === "Mountain") {
+				if (type_dung === "Mountain Cavern") {
 					loot1 = mountain_loot;
 				} else {
 					loot1 = other_loot;
@@ -3607,18 +3601,17 @@
 					}
 					var loot_115 = Math.ceil(total_loot * 1.15);
 					if (home_loot > loot_115) {
-						var option_numbers = Math.floor(home_loot / loot_115);
-						if (option_numbers < count) {
-							$("#WCcomcount").val(option_numbers);
+						var raidCount = Math.floor(home_loot / loot_115);
+						if (raidCount < count) {
+							$("#WCcomcount").val(raidCount);
 						} else {
 							$("#WCcomcount").val(count);
 						}
-						var templ1 = ((home_loot / loot_115) * 100) / option_numbers;
-						var templ2 = ((templ1 - 100) / templ1) * 100;
+						var templ2 = (home_loot / raidCount);
 						for (var i in km) {
 							if (km[i] !== 0) {
-								var templ3 = km[i] / option_numbers;
-								km[i] = Math.floor(templ3 * (1 - (templ2 / 100)));
+								var templ3 = km[i] / raidCount;
+								km[i] = Math.floor(templ3 );
 								$("#rval" + i).val(km[i]);
 								if (km[14]) {
 									$("#rval14").val("0");
@@ -3641,7 +3634,7 @@
 							break;
 						}
 					}
-					var loot_95 = Math.ceil(total_loot * 0.95);
+					var loot_95 = Math.ceil(total_loot * defaultCarry);
 					if (home_loot > loot_95) {
 						var option_numbers = Math.floor(home_loot / loot_95);
 						if (option_numbers < count) {
@@ -3745,16 +3738,17 @@
 				$("#raidboxb").remove();
 			});
 		}
-		var cancelallya = "<input id='cancelAllya' type='checkbox' checked='checked'> Cancel attack if same alliance";
-		var cancelallys = "<input id='cancelAllys' type='checkbox' checked='checked'> Cancel attack if same alliance";
-		var cancelallyp = "<input id='cancelAllyp' type='checkbox' checked='checked'> Cancel attack if same alliance";
-		var cancelallyc = "<input id='cancelAllyc' type='checkbox' checked='checked'> Cancel attack if same alliance";
-		$("#assaulttraveltime").parent().next().html(cancelallya);
-		$("#siegetraveltime").parent().next().html(cancelallys);
-		$("#plundtraveltime").parent().next().html(cancelallyp);
-		$("#scouttraveltime").parent().next().html(cancelallyc);
+		// This seems like a bad idea
+//		var cancelallya = "<input id='cancelAllya' type='checkbox' checked='checked'> Cancel attack if same alliance";
+//		var cancelallys = "<input id='cancelAllys' type='checkbox' checked='checked'> Cancel attack if same alliance";
+//		var cancelallyp = "<input id='cancelAllyp' type='checkbox' checked='checked'> Cancel attack if same alliance";
+//		var cancelallyc = "<input id='cancelAllyc' type='checkbox' checked='checked'> Cancel attack if same alliance";
+//		$("#assaulttraveltime").parent().next().html(cancelallya);
+//		$("#siegetraveltime").parent().next().html(cancelallys);
+//		$("#plundtraveltime").parent().next().html(cancelallyp);
+//		$("#scouttraveltime").parent().next().html(cancelallyc);
 		$("#assaultGo").click(function () {
-			if ($("#cancelAllya").prop("checked") == false) {
+			
 				setTimeout(function () {
 					$(".shAinf").each(function () {
 						var tid = $(this).parent().next().find(".cityblink").attr("data");
@@ -3793,10 +3787,9 @@
 						}
 					});
 				}, 4000);
-			}
+			
 		});
 		$("#plunderGo").click(function () {
-			if ($("#cancelAllyp").prop("checked") == false) {
 				setTimeout(function () {
 					$(".shAinf").each(function () {
 						var tid = $(this).parent().next().find(".cityblink").attr("data");
@@ -3835,10 +3828,8 @@
 						}
 					});
 				}, 4000);
-			}
 		});
 		$("#scoutGo").click(function () {
-			if ($("#cancelAllyc").prop("checked") == false) {
 				setTimeout(function () {
 					$(".shAinf").each(function () {
 						var tid = $(this).parent().next().find(".cityblink").attr("data");
@@ -3877,10 +3868,8 @@
 						}
 					});
 				}, 4000);
-			}
 		});
 		$("#siegeGo").click(function () {
-			if ($("#cancelAllys").prop("checked") == false) {
 				setTimeout(function () {
 					$(".shAinf").each(function () {
 						var tid = $(this).parent().next().find(".cityblink").attr("data");
@@ -3919,7 +3908,6 @@
 						}
 					});
 				}, 4000);
-			}
 		});
 	});
 	//total research
