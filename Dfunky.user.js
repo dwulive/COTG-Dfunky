@@ -1,18 +1,15 @@
 // ==UserScript==
 // @name Cotg Dfunky
 // @namespace https://github.com/Dkhub85/COTG-Dfunky
-// @version 1.0.2
+// @version 1.0.999
 // @description Cotg Dfunky
 // @author Dhruv
-// @match https://w14.crownofthegods.com
-// @match https://w13.crownofthegods.com
-// @match https://w12.crownofthegods.com
-// @match https://w11.crownofthegods.com
+// @match https://*.crownofthegods.com/*
 // @include https://w/*.crownofthegods.com/World*
 // @require https://server.cotg.ovh/userscripts/crypt.js
 // @grant none
-// @updateURL https://raw.githubusercontent.com/DKhub85/COTG-Dfunky/master/Dfunky.user.js
-// @downloadURL https://raw.githubusercontent.com/DKhub85/COTG-Dfunky/master/Dfunky.user.js
+// @updateURL https://raw.githubusercontent.com/dwulive/COTG-Dfunky/master/Dfunky.user.js
+// @downloadURL https://raw.githubusercontent.com/dwulive/COTG-Dfunky/master/Dfunky.user.js
 // ==/UserScript==
 
 (function () {
