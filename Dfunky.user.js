@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name Cotg Dfunky
-// @namespace https://github.com/dwulive/COTG-Dfunky
+// @namespace https://github.com/DKhub85/COTG-Dfunky
 // @version 1.0.999
 // @description Cotg Dfunky
 // @author Dhruv
